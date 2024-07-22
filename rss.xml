@@ -1,0 +1,1101 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>萌 Hz | 木白の时记</title>
+        <subtitle>日々私たちが过ごしている日常は、実は、奇迹の连続なのかもしれない</subtitle>
+        <icon>https://blog.moehz.com/images/favicon.ico</icon>
+        <link>https://blog.moehz.com</link>
+        <author>
+          <name>木 白</name>
+        </author>
+        <description></description>
+        <language>zh-CN</language>
+        <pubDate>Wed, 17 Jul 2024 00:00:00 +0000</pubDate>
+        <lastBuildDate>Wed, 17 Jul 2024 00:00:00 +0000</lastBuildDate>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/docker%E5%AE%89%E8%A3%85rustdesk.html</guid>
+            <title>docker安装rustdesk</title>
+            <link>https://blog.moehz.com/archives/docker%E5%AE%89%E8%A3%85rustdesk.html</link>
+            <category term="linux" scheme="https://blog.moehz.com/categories/linux/" />
+            <category term="linux" scheme="https://blog.moehz.com/tags/linux/" />
+            <category term="docker" scheme="https://blog.moehz.com/tags/docker/" />
+            <pubDate>Wed, 17 Jul 2024 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;p&gt;用了很久的 Todesk，从免费一路走过来，吃相越来越难看。现在居然直接限制每月远程时长。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20240624095021.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;向日葵远程总觉得不稳定，老是间歇性断连，看来还是得自给自足，网上查询得知 Rustdesk 可以自建 server，决定使用这个。&lt;/p&gt;
+&lt;h2 id=&#34;搭建流程&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#搭建流程&#34;&gt;#&lt;/a&gt; 搭建流程&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;前提：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;你得有公网 IP，不然请自行通过 frp 等方式做中继或者内网穿透，公网 ipv6 可能也行，请自行探索&lt;/li&gt;
+&lt;li&gt;自行安装 docker，以及 docker compose，本篇不介绍&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;用 &lt;code&gt;docker compose&lt;/code&gt;  可以很方便的搭建，内容如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight yml&#34;&gt;&lt;figcaption data-lang=&#34;YAML&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token key atrule&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;3&#39;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token key atrule&#34;&gt;services&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token key atrule&#34;&gt;hbbs&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; hbbs&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;network_mode&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; host&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; rustdesk/rustdesk&lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt;server&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;latest&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; hbbs &lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt;r rust.test.com&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;21117 &lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt;k _&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;volumes&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;      &lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt; ./data&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;/root&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;depends_on&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;11&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;      &lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt; hbbr&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;12&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; unless&lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt;stopped&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;13&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;14&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token key atrule&#34;&gt;hbbr&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;15&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; hbbr&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;16&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;network_mode&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; host&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;17&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; rustdesk/rustdesk&lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt;server&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;latest&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;18&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; hbbr&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;19&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;volumes&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;20&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;      &lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt; ./data&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;/root&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;21&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token key atrule&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; unless&lt;span class=&#34;token punctuation&#34;&gt;-&lt;/span&gt;stopped&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;我这里图省事，直接使用 host 模式了，讲解一下重点的参数 ``&lt;br /&gt;
+ &lt;code&gt;command: hbbs -r rust.test.com:21117 -k _&lt;/code&gt; ：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;rust.test.com:21117&lt;/code&gt; &lt;br /&gt;
+ 这个是客户端需要填写的 ID 服务器地址，自行根据实际情况修改，做好 DDNS&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;-k _&lt;/code&gt; &lt;br /&gt;
+这代表开启加密，密钥它会自己生成，可以通过 &lt;code&gt;docker logs hbbs&lt;/code&gt;  查看日志：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20240624100353.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;也可以在 &lt;code&gt;./data&lt;/code&gt;  下查看生成的密钥，后缀为 &lt;code&gt;.pub&lt;/code&gt;  的文件就是：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20240624100600.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;网络配置&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#网络配置&#34;&gt;#&lt;/a&gt; 网络配置&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果你有公网 IP，那么还需要在主路由配置一下端口映射，我以 openwrt 为例演示，其他路由器自行探寻&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;需要开放的端口默认为 &lt;code&gt;21115-21119&lt;/code&gt;  (如果你用了桥模式映射了其他端口，自行调整)，在 openwrt 中， &lt;code&gt;网络&lt;/code&gt;  --&amp;gt; &lt;code&gt;防火墙&lt;/code&gt;  --&amp;gt; &lt;code&gt;端口转发&lt;/code&gt; 下添加规则：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20240624101312.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;客户端配置&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#客户端配置&#34;&gt;#&lt;/a&gt; 客户端配置&lt;/h2&gt;
+&lt;p&gt;下载客户端并安装后，在 &lt;code&gt;设置&lt;/code&gt;  --&amp;gt; &lt;code&gt;网络&lt;/code&gt;  --&amp;gt; &lt;code&gt;解锁网络设置&lt;/code&gt; 后，填写 &lt;code&gt;ID服务器&lt;/code&gt; 和 &lt;code&gt;Key&lt;/code&gt; ，&lt;br /&gt;
+填写内容见上面关于 &lt;code&gt;command: hbbs -r rust.test.com:21117 -k _&lt;/code&gt; 的讲解 (如果你使用的为默认的 21117 端口，可不填端口号)：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20240624102038.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;回到主页，如果左下角看到 &lt;code&gt;就绪&lt;/code&gt; ，就代表连接正常了&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20240624102307.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;功能展示&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#功能展示&#34;&gt;#&lt;/a&gt; 功能展示&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img20240624102447.png&#34; alt=&#34;image.png&#34; /&gt;&lt;br /&gt;
+ 基本的功能都有：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可以配置原始尺寸和适应窗口&lt;/li&gt;
+&lt;li&gt;画质可以选择画质优先，平衡，速度优先，自定义四种&lt;/li&gt;
+&lt;li&gt;编解码支持自动，VP8,VP9,AV1,H264,H265&lt;/li&gt;
+&lt;li&gt;分辨率不作限制，测试 4k 问题不大，主要看你的网络延迟，延迟大可以调节为 1080P 或者更低&lt;/li&gt;
+&lt;li&gt;其他功能见图以及自行探索配置，不做赘述&lt;/li&gt;
+&lt;/ol&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/Unraid%207%E5%88%B0%E6%9D%A5%E4%BA%86%EF%BC%81.html</guid>
+            <title>Unraid 7到来了！</title>
+            <link>https://blog.moehz.com/archives/Unraid%207%E5%88%B0%E6%9D%A5%E4%BA%86%EF%BC%81.html</link>
+            <category term="NAS" scheme="https://blog.moehz.com/categories/NAS/" />
+            <category term="NAS" scheme="https://blog.moehz.com/tags/NAS/" />
+            <category term="UNRAID" scheme="https://blog.moehz.com/tags/UNRAID/" />
+            <pubDate>Wed, 17 Jul 2024 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;p&gt;官方文档：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9kb2NzLnVucmFpZC5uZXQvdW5yYWlkLW9zL3JlbGVhc2Utbm90ZXMvNy4wLjAvI3N0b3JhZ2U=&#34;&gt;Version 7.0.0-beta.1 2024-06-26 | Unraid Docs&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;介于官方文档全英文，可能比较难理解，做一下简单分享&lt;/p&gt;
+&lt;h2 id=&#34;存储相关&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#存储相关&#34;&gt;#&lt;/a&gt; 存储相关&lt;/h2&gt;
+&lt;h3 id=&#34;阵列可选&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#阵列可选&#34;&gt;#&lt;/a&gt; 阵列可选&lt;/h3&gt;
+&lt;p&gt;你现在可以把阵列设置为 “None” 了，允许阵列中不分配硬盘，仅分配给池时启动阵列&lt;/p&gt;
+&lt;p&gt;这个之前必须至少分配一个硬盘给阵列才能启动阵列，介于 zfs 的引入和阵列不支持 Trim/Discard 而不建议加入固态，官方做了这样的修改&lt;/p&gt;
+&lt;p&gt;这个对希望组全闪 NAS 和全 zfs 的人来说将会是个好消息&lt;/p&gt;
+&lt;h3 id=&#34;共享文件的主副存储都可以设置为池&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#共享文件的主副存储都可以设置为池&#34;&gt;#&lt;/a&gt; 共享文件的主副存储都可以设置为池&lt;/h3&gt;
+&lt;p&gt;之前主副存储只能是阵列和池，现在主副存储都可以设置为池，你可以在池与池之间使用&lt;strong&gt; Mover&lt;/strong&gt; 功能转移文件。&lt;/p&gt;
+&lt;p&gt;阵列可以设置为空的附属功能，应用场景：机械建立 zfs 池，固态建立 cache，主存储使用固态加速，副存储为 zfs 池，定期迁移以同时满足高速和可靠性。&lt;/p&gt;
+&lt;h3 id=&#34;可以用mover清空单个硬盘&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#可以用mover清空单个硬盘&#34;&gt;#&lt;/a&gt; 可以用 Mover 清空单个硬盘&lt;/h3&gt;
+&lt;p&gt;命令如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;mover start -e diskN &lt;span class=&#34;token operator&#34;&gt;|&amp;amp;&lt;/span&gt; logger &lt;span class=&#34;token operator&#34;&gt;&amp;amp;&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# N 为盘号 [1..28]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;其实有没有可以，有个插件做的更好，&lt;strong&gt;unbalanced&lt;/strong&gt;，你说是不是？&lt;/p&gt;
+&lt;h3 id=&#34;系统文件预设&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#系统文件预设&#34;&gt;#&lt;/a&gt; 系统文件预设&lt;/h3&gt;
+&lt;p&gt;一些跟系统运行，Docker，VM 虚拟机相关的共享文件夹会自动做一些预设配置&lt;br /&gt;
+如果存在 Cache，system，appdata，isos，会被设置为：主存储 cache，不配置副存储，来让系统，docker，虚拟机运行在固态硬盘上，更流畅&lt;/p&gt;
+&lt;h3 id=&#34;zfs&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#zfs&#34;&gt;#&lt;/a&gt; ZFS&lt;/h3&gt;
+&lt;p&gt;支持混合 ZFS 池&lt;br /&gt;
+支持在具有足够保护的情况下从 ZFS 池中多个驱动器故障中恢复&lt;br /&gt;
+支持对 ZFS 池和硬盘进行 LUKS 加密&lt;br /&gt;
+为新的 ZFS 池和子池设置合理的默认配置文件&lt;/p&gt;
+&lt;h3 id=&#34;其他&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#其他&#34;&gt;#&lt;/a&gt; 其他&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;同时启停池中的硬盘&lt;/li&gt;
+&lt;li&gt;增加了为 LUKS 加密磁盘更改加密短语 / 密钥的功能&lt;/li&gt;
+&lt;li&gt;在创建 GPT 分区表和通知内核重新读取之间引入延迟，以防止 “设备或资源繁忙” 错误。&lt;/li&gt;
+&lt;li&gt;正确导入在以前版本中创建的池&lt;/li&gt;
+&lt;li&gt;修复了当被替换的硬盘碰巧有 LUKS Header 时的错误&lt;/li&gt;
+&lt;li&gt;修正与 ZFS 卷相关的 highwater 分配方法&lt;/li&gt;
+&lt;li&gt;当空间不足导致创建对象失败，输出 syslog 消息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;vm管理器&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#vm管理器&#34;&gt;#&lt;/a&gt; VM 管理器&lt;/h2&gt;
+&lt;p&gt;增加了虚拟机克隆，快照，evdev 直通的功能&lt;/p&gt;
+&lt;p&gt;虚拟机的配置 xml 会根据 GUI 配置实时更改&lt;/p&gt;
+&lt;h3 id=&#34;其他-2&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#其他-2&#34;&gt;#&lt;/a&gt; 其他&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;VM 选项卡
+&lt;ul&gt;
+&lt;li&gt;增加对 VM 克隆，快照的支持&lt;/li&gt;
+&lt;li&gt;增加对快照和恢复的日志&lt;/li&gt;
+&lt;li&gt;增加对 VM 的文件系统级快照&lt;/li&gt;
+&lt;li&gt;显示给虚拟机分配的显卡和 IP 地址&lt;/li&gt;
+&lt;li&gt;支持用户自定义虚拟机模板&lt;/li&gt;
+&lt;li&gt;对 CD 信息功能增加启动检查&lt;/li&gt;
+&lt;li&gt;链接 &lt;code&gt;/usr/libexec/virtiofsd&lt;/code&gt;  到特定脚本，以支持不被 libvirt 直接支持的额外参数&lt;/li&gt;
+&lt;li&gt;显示虚拟机虚拟磁盘大于 1TB 时的小数位&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;虚拟机设定
+&lt;ul&gt;
+&lt;li&gt;自动启动选项&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;增加 / 编辑 VM 模板
+&lt;ul&gt;
+&lt;li&gt;增加 inline xml view 选项&lt;/li&gt;
+&lt;li&gt;增加 qemu ppc64&lt;/li&gt;
+&lt;li&gt;支持 qemu:override&lt;/li&gt;
+&lt;li&gt;增加 QEMU command-line passthrough&lt;/li&gt;
+&lt;li&gt;增加 VM 多功能支持，比如 PCI Other&lt;/li&gt;
+&lt;li&gt;windows 虚拟机模板增强，包括 hypervclock 支持&lt;/li&gt;
+&lt;li&gt;为模拟 CPU 添加 “migratable” 开 / 关选项&lt;/li&gt;
+&lt;li&gt;增加偏移和定时器支持&lt;/li&gt;
+&lt;li&gt;如果 hyperv 发生变化，则更改新 VM 的定时器默认值&lt;/li&gt;
+&lt;li&gt;添加 no keymap 选项，并设置 VGPU 默认使用该选项&lt;/li&gt;
+&lt;li&gt;增加 nogpu 选项&lt;/li&gt;
+&lt;li&gt;增加 WEBUI 选项&lt;/li&gt;
+&lt;li&gt;增加对 Intel iGPU 的 SR-IOV 支持&lt;/li&gt;
+&lt;li&gt;增加对 evdev 直通的支持&lt;/li&gt;
+&lt;li&gt;修复 UUID 在 xml 中改变的问题&lt;/li&gt;
+&lt;li&gt;添加指定之前添加 VM 时创建映像的位置的功能&lt;/li&gt;
+&lt;li&gt;修复了 QCOW2 文件不在虚拟机路径中显示自动问题，应该是手动&lt;/li&gt;
+&lt;li&gt;为虚拟磁盘添加 SSD flag&lt;/li&gt;
+&lt;li&gt;XML 窗口适应页面大小&lt;/li&gt;
+&lt;li&gt;修复移动设备下的 VM XML 视图&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Dashboard
+&lt;ul&gt;
+&lt;li&gt;增加虚拟机使用信息，使能路径为：&lt;strong&gt;Settings &amp;gt; VM Manager &amp;gt; Show VM Usage&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;docker&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker&#34;&gt;#&lt;/a&gt; Docker&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;允许使用端口规范自定义注册表&lt;/li&gt;
+&lt;li&gt;修复 WG 路由添加到正确的接口 (br0 或 eth0 或 bond0)&lt;/li&gt;
+&lt;li&gt;使用&lt;strong&gt; lazy unmount&lt;/strong&gt; 卸载 docker 镜像，以防止阻塞停止阵列&lt;/li&gt;
+&lt;li&gt;解决多个安全问题 (CVE-2024-21626, CVE-2024-24557)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;移除非 dockerman 容器的更新按钮&lt;/strong&gt;（终于解决了...）&lt;/li&gt;
+&lt;li&gt;修复当 docker 通信失败时的 php 错误&lt;/li&gt;
+&lt;li&gt;忽略 Docker 配置文件中的空路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;网络&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#网络&#34;&gt;#&lt;/a&gt; 网络&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;解决了在自定义 IPv6 网络上启动 Docker 容器的问题&lt;/li&gt;
+&lt;li&gt;如果 network.cfg 不存在，在启动时自动生成&lt;/li&gt;
+&lt;li&gt;支持 NFS 4.1 和 4.2&lt;/li&gt;
+&lt;li&gt;默认允许 NFSv4 挂载&lt;/li&gt;
+&lt;li&gt;升级到 OpenSSL 3&lt;/li&gt;
+&lt;li&gt;允许所有 IPv4/IPv6 地址作为监听器。解决了 IPv4 或 IPv6 地址动态变化的问题&lt;/li&gt;
+&lt;li&gt;SMB：
+&lt;ul&gt;
+&lt;li&gt;只有在 netbios 未启用的情况下，才能添加 ipv6 侦听地址&lt;/li&gt;
+&lt;li&gt;在 MacOS 上修复无法写入’flash’共享并恢复 Time Machine 兼容性（看不明白）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;VPN 管理器现在将所有接口加入到 WireGuard 隧道中，当升级或更改网络配置时，可以对隧道进行虚拟更改，以更新 WireGuard 隧道配置。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;webui&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#webui&#34;&gt;#&lt;/a&gt; WEBUI&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;笑死，更新全靠插件&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;集成dynamix-file-manager&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#集成dynamix-file-manager&#34;&gt;#&lt;/a&gt; 集成 Dynamix File Manager&lt;/h3&gt;
+&lt;p&gt;插件转正，可以通过网页对文件进行一定操作&lt;/p&gt;
+&lt;h3 id=&#34;gui-search&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#gui-search&#34;&gt;#&lt;/a&gt; GUI Search&lt;/h3&gt;
+&lt;p&gt;插件转正，搜索页面功能&lt;/p&gt;
+&lt;h3 id=&#34;outgoing-proxy-manager&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#outgoing-proxy-manager&#34;&gt;#&lt;/a&gt; Outgoing Proxy Manager&lt;/h3&gt;
+&lt;p&gt;插件转正，国人用 Unraid 必备的代理工具&lt;/p&gt;
+&lt;h3 id=&#34;notification-agents&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#notification-agents&#34;&gt;#&lt;/a&gt; Notification Agents&lt;/h3&gt;
+&lt;p&gt;插件转正，通知代理的 xml 储存为单独的文件，使得更容易的增加通知代理&lt;/p&gt;
+&lt;h3 id=&#34;ntp-configuration&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#ntp-configuration&#34;&gt;#&lt;/a&gt; NTP Configuration&lt;/h3&gt;
+&lt;p&gt;不解释了，官方写了一大篇，其实就是自定义时间服务器&lt;/p&gt;
+&lt;h3 id=&#34;dashboard&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#dashboard&#34;&gt;#&lt;/a&gt; Dashboard&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;添加服务器日期和时间到仪表板，单击时间编辑相关设置&lt;/li&gt;
+&lt;li&gt;重做 “系统” 磁贴，让正在显示的内容更清晰，包括工具提示&lt;/li&gt;
+&lt;li&gt;显示有用的内容时，仪表板磁砖最小化（啥东西？）&lt;/li&gt;
+&lt;li&gt;修复浏览器让仪表板可见 cookie 处于畸形状态的问题&lt;/li&gt;
+&lt;li&gt;切换语言时，重置仪表板磁贴&lt;/li&gt;
+&lt;li&gt;修复低温时提示高温警告的问题&lt;/li&gt;
+&lt;li&gt;一些颜色调整&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;smart-improvements&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#smart-improvements&#34;&gt;#&lt;/a&gt; SMART improvements&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;以 KB/MB/GB/TB 单位显示 SSD 的 SMART Attributes 中的写入量&lt;/li&gt;
+&lt;li&gt;增加 “SSD 寿命剩余” 的 SMART 属性。&lt;/li&gt;
+&lt;li&gt;修复 SMART 属性 “累计通电时间，小时：分钟 xxxxx:yy” 的显示问题&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;其他-3&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#其他-3&#34;&gt;#&lt;/a&gt; 其他&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;HDD/SSD/NVMe 硬盘支持不同的警告 / 紧急温度阈值。NVMe 阈值由驱动器本身自动设置，&lt;strong&gt;Settings &amp;gt; Disk Settings&lt;/strong&gt; 中设置，每个磁盘可以单独设置覆盖&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Settings &amp;gt; Local Console Settings&lt;/strong&gt; 其中包含键盘布局、屏幕空白时间和 Bash 历史记录的选项&lt;/li&gt;
+&lt;li&gt;增加 &lt;strong&gt;Settings &amp;gt; Power Mode&lt;/strong&gt;，可以配置为 power efficiency, balanced, or performance&lt;/li&gt;
+&lt;li&gt;增加收藏功能，可以收藏你常用的工具和设置项&lt;/li&gt;
+&lt;li&gt;关机 / 重启增加更多的信息显示&lt;/li&gt;
+&lt;li&gt;优化通知显示&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;date &amp;amp; time&lt;/strong&gt; 位置转移，从&lt;strong&gt; Display Settings&lt;/strong&gt; 移到 &lt;strong&gt;Settings &amp;gt; Date &amp;amp; Time Settings&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;可选是否显示 NVMe power usage，见&lt;strong&gt; Settings &amp;gt; Disk Settings&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;UPC：改进通信许可密钥恢复，可在更多的网络环境中工作&lt;/li&gt;
+&lt;li&gt;Web 组件增强 — 降级、更新和注册&lt;/li&gt;
+&lt;li&gt;优化页脚阵列状态显示&lt;/li&gt;
+&lt;li&gt;允许社区应用程序 (如果安装) 在进行多安装时自动启动容器&lt;/li&gt;
+&lt;li&gt;数个样式更改&lt;/li&gt;
+&lt;li&gt;防止将新硬盘格式化为 ReiserFS&lt;/li&gt;
+&lt;li&gt;当没有挂载的阵列磁盘时，关闭 “添加共享” 按钮&lt;/li&gt;
+&lt;li&gt;ShareEdit page 改进&lt;/li&gt;
+&lt;li&gt;对配置文件的更新采用 atomic writes&lt;/li&gt;
+&lt;li&gt;ZFS 池设置：
+&lt;ul&gt;
+&lt;li&gt;创建有意义的 ZFS 子池描述&lt;/li&gt;
+&lt;li&gt;文本修改，&#39;raid0&#39; 更改为&#39;stripe&#39;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;池替换设备时，提供警告文本&lt;/li&gt;
+&lt;li&gt;Lincstation N1 添加图标&lt;/li&gt;
+&lt;li&gt;添加文本框以配置多行 NFS 规则&lt;/li&gt;
+&lt;li&gt;修复登录时的 500 报错 / 修复在空文件上读取文件&lt;/li&gt;
+&lt;li&gt;从 /mnt/ 上的下拉列表中排除某些文件夹&lt;/li&gt;
+&lt;li&gt;检测 curl error 23 并恢复&lt;/li&gt;
+&lt;li&gt;修复如果使用默认端口，IPv6 不能再 Management Access 页面正确显示的问题&lt;/li&gt;
+&lt;li&gt;允许在启动时选择文件系统类型，仅适用于文件系统类型当前设置为 “自动” 的不可挂载设备。&lt;/li&gt;
+&lt;li&gt;添加额外的 USB 硬盘 smartmontools 选项到 webgui&lt;/li&gt;
+&lt;li&gt;解决数个 PHP8 警告&lt;/li&gt;
+&lt;li&gt;在 btrfs/zfs 冗余池中，以前丢失的设备设备应该显示为 “disabled”，而不是 “missing”&lt;/li&gt;
+&lt;li&gt;向 btrfs 池添加更多信息，并添加更多用户友好的 xfs 修复&lt;/li&gt;
+&lt;li&gt;管理访问：修复错误的 ip 地址显示&lt;/li&gt;
+&lt;li&gt;为插件安装 / 更新添加日期和时间信息&lt;/li&gt;
+&lt;li&gt;反馈表单：将 DONE 按钮更改为 CANCEL&lt;/li&gt;
+&lt;li&gt;UPS 设置页面：
+&lt;ul&gt;
+&lt;li&gt;增加手动设置 UPS 容量覆盖功能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;diagnostics&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#diagnostics&#34;&gt;#&lt;/a&gt; Diagnostics&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;将 gpu_statistics 中的 gpujson 添加到 diagnostics 中&lt;/li&gt;
+&lt;li&gt;改进了 LXC 日志的匿名化&lt;/li&gt;
+&lt;li&gt;如果安装了 FCP 插件，在诊断过程中执行扫描&lt;/li&gt;
+&lt;li&gt;添加 phplog 来识别 PHP 错误&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;misc&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#misc&#34;&gt;#&lt;/a&gt; Misc&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;升级 memtest 为版本 6.20&lt;/li&gt;
+&lt;li&gt;删除对过时的 unraid.net 证书的支持&lt;/li&gt;
+&lt;li&gt;删除 “UpdateDNS” 功能，因为不再使用过时的非通配符 “&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cDovL3VucmFpZC5uZXQ=&#34;&gt;unraid.net&lt;/span&gt;”SSL 证书&lt;/li&gt;
+&lt;li&gt;从 go 脚本中剥离代理信息和 &#39;&amp;amp;&#39;&lt;/li&gt;
+&lt;li&gt;Passwd 文件处理修正&lt;/li&gt;
+&lt;li&gt;当 avahidaemon 运行时，添加 name.local 到 host 文件&lt;/li&gt;
+&lt;li&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cDovL3huLS1ob3N0c2tleXMtdWw2bmY5YzRudzM1YXpvMmVkZzdpLmxpbS10ZWNobm9sb2d5LmNvbQ==&#34;&gt;从 hosts 文件中删除 keys.lim-technology.com&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;rc.S: 从 XFS 挂载中删除 wsync，以防止 WebGUI 在重 I/O 时在 /boot 上卡住&lt;/li&gt;
+&lt;li&gt;修复检测无可用的挂载磁盘的问题&lt;/li&gt;
+&lt;/ul&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/%E7%8C%AB%E7%9B%98%E6%8A%98%E8%85%BE%E8%AE%B0.html</guid>
+            <title>猫盘折腾历程</title>
+            <link>https://blog.moehz.com/archives/%E7%8C%AB%E7%9B%98%E6%8A%98%E8%85%BE%E8%AE%B0.html</link>
+            <category term="NAS" scheme="https://blog.moehz.com/categories/NAS/" />
+            <category term="NAS" scheme="https://blog.moehz.com/tags/NAS/" />
+            <category term="群晖" scheme="https://blog.moehz.com/tags/%E7%BE%A4%E6%99%96/" />
+            <category term="猫盘" scheme="https://blog.moehz.com/tags/%E7%8C%AB%E7%9B%98/" />
+            <pubDate>Wed, 17 Jul 2024 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;p&gt;猫盘作为几十块体验群晖的小玩意，存粹当文件分享服务器还是可以的，功耗可以忽略不记&lt;/p&gt;
+&lt;p&gt;但价格上三位数就不值当了，用 x86 设备装是更优的选择&lt;/p&gt;
+&lt;p&gt;猫盘性能比较差，单盘位还是 2.5 寸盘，不能当数据主力，重度使用建议配合&lt;strong&gt; Cloud Sync&lt;/strong&gt; 加密备份到其他云盘&lt;/p&gt;
+&lt;p&gt;记录一下新装猫盘后需要做的操作&lt;/p&gt;
+&lt;h2 id=&#34;三合一修复脚本&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#三合一修复脚本&#34;&gt;#&lt;/a&gt; 三合一修复脚本&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;LED 灯、硬盘休眠、完美关机 (小猫不支持)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;脚本见下：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token shebang important&#34;&gt;#!/bin/sh&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function-name function&#34;&gt;fixhosts&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;cat&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;&gt;&lt;/span&gt; /etc/hosts &lt;span class=&#34;token operator&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;EOF&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;127.0&lt;/span&gt;.0.1	localhost&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;::1		localhost&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;127.0&lt;/span&gt;.0.1	DS120j&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;::1		DS120j&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;52.84&lt;/span&gt;.166.71 api.themoviedb.org&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;11&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;52.84&lt;/span&gt;.166.68 api.themoviedb.org&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;12&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;18.65&lt;/span&gt;.159.31 api.themoviedb.org&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;13&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;13.35&lt;/span&gt;.0.128 api.themoviedb.org&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;14&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;99.84&lt;/span&gt;.238.181 image.tmdb.org&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;15&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;13.226&lt;/span&gt;.254.58 image.tmdb.org&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;16&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;65.8&lt;/span&gt;.164.121 image.tmdb.org&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;17&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token number&#34;&gt;54.192&lt;/span&gt;.73.28 image.tmdb.org&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;18&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;EOF&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;19&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;20&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;21&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function-name function&#34;&gt;rc_local_func&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;22&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;120bak&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;23&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;rm&lt;/span&gt; /etc/rc.local&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;24&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; -f /etc/rc.local.bak &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;25&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token function&#34;&gt;mv&lt;/span&gt; -f /etc/rc.local.bak /etc/rc.local&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;26&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;27&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;else&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;28&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; -f /etc/rc.local &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;29&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token function&#34;&gt;mv&lt;/span&gt; -f /etc/rc.local /etc/rc.local.bak&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;30&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;31&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;cat&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;&gt;&lt;/span&gt; /etc/rc.local &lt;span class=&#34;token operator&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;EOF&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;32&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;#!/bin/sh&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;33&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;R&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;34&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;35&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;36&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x01 0x01&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;37&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x31 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;38&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x32 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;39&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x33 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;40&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x30 0x07&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;41&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x34 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;42&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x35 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;43&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x36 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;44&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;45&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;killall&lt;/span&gt; -9 synoscsitmonitor&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;46&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sleep&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;60&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;47&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/usr/sbin/ntpdate -u ntp1.aliyun.com&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;48&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;systemctl stop pkg-scsit-monitor.service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;49&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;50&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;51&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;52&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;G&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;53&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;54&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;55&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x01 0x01&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;56&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x31 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;57&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x32 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;58&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x33 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;59&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x30 0x07&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;60&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x34 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;61&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x35 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;62&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x36 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;63&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;64&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;killall&lt;/span&gt; -9 synoscsitmonitor&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;65&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sleep&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;60&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;66&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/usr/sbin/ntpdate -u ntp1.aliyun.com&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;67&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;systemctl stop pkg-scsit-monitor.service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;68&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;69&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;70&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;71&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;B&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;72&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;73&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;74&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x01 0x01&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;75&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x31 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;76&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x32 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;77&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x33 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;78&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x30 0x07&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;79&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x34 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;80&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x35 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;81&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x36 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;82&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;83&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;killall&lt;/span&gt; -9 synoscsitmonitor&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;84&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sleep&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;60&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;85&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/usr/sbin/ntpdate -u ntp1.aliyun.com&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;86&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;systemctl stop pkg-scsit-monitor.service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;87&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;88&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;89&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;90&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;W&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;91&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;92&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;93&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x01 0x01&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;94&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x31 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;95&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x32 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;96&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x33 0x03&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;97&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x30 0x07&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;98&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x34 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;99&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x35 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;100&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x36 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;101&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;102&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;killall&lt;/span&gt; -9 synoscsitmonitor&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;103&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sleep&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;60&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;104&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/usr/sbin/ntpdate -u ntp1.aliyun.com&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;105&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;systemctl stop pkg-scsit-monitor.service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;106&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;107&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;108&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;109&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;110&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;111&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;112&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x01 0x01&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;113&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x30 0x07&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;114&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;115&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x31 0x72&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;116&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x32 0x72&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;117&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x33 0x72&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;118&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;119&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x37 0x44  &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;120&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x3a 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;121&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x3d 0x66      &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;122&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;123&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x38 0x44&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;124&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x3b 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;125&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x3e 0x66&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;126&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x39 0x40&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;127&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x3c 0x40&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;128&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x3f 0x40&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;129&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;130&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x34 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;131&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x35 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;132&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x36 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;133&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;134&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;killall&lt;/span&gt; -9 synoscsitmonitor&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;135&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sleep&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;60&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;136&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/usr/sbin/ntpdate -u ntp1.aliyun.com&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;137&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;systemctl stop pkg-scsit-monitor.service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;138&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;139&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;140&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;141&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;X&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;142&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;143&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;144&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;145&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;killall&lt;/span&gt; -9 synoscsitmonitor&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;146&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sleep&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;60&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;147&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/usr/sbin/ntpdate -u ntp1.aliyun.com&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;148&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;systemctl stop pkg-scsit-monitor.service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;149&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;150&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;151&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;152&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;EOF&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;153&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;120x&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;154&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token function&#34;&gt;cat&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;&gt;&gt;&lt;/span&gt; /etc/rc.local &lt;span class=&#34;token operator&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;EOF&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;155&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;K&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;156&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;157&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/usr/bin/systemctl --force poweroff&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;158&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;159&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x01 0x01&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;160&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x31 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;161&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x32 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;162&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x33 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;163&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x30 0x07&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;164&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x34 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;165&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x35 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;166&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x36 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;167&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;168&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;EOF&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;169&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;170&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;120d&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;171&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token function&#34;&gt;cat&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;&gt;&gt;&lt;/span&gt; /etc/rc.local &lt;span class=&#34;token operator&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;EOF&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;172&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;K&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;173&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;174&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x77 0xc6&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;175&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sleep&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;176&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;reboot&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;177&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;178&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;EOF&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;179&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;180&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;chmod&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;755&lt;/span&gt; /etc/rc.local&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;181&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;182&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;183&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;184&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;185&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;186&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;33m 如果一直失败，可能是引导方式不同，请另寻高明。  &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;187&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m =================== LonelyGod =================== &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;188&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |                                               | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;189&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |          猫盘群晖DSM7.0三合一修复脚本         | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;190&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |                                               | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;191&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m ================= https://hin.cool ================= &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;192&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;33m             bash catd.sh 120x/120d/120bak             &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;193&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;194&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;195&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;120x&#34;&lt;/span&gt; -o &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;120d&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;196&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;33m 如果一直失败，可能是引导方式不同，请另寻高明。  &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;197&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m =================== LonelyGod =================== &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;198&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |                                               | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;199&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |          猫盘群晖DSM7.0三合一修复脚本         | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;200&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |                                               | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;201&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m ================= https://hin.cool ================= &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;202&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  rc_local_func &lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;203&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  fixhosts&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;204&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;rm&lt;/span&gt; -rf /var/log/*&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;205&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;206&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/dev/null#/tmp/scemd.log#g&#39;&lt;/span&gt; /etc.defaults/syslog-ng/patterndb.d/scemd.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;207&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/dev/null#/tmp/postgresql.log#g&#39;&lt;/span&gt; /etc.defaults/syslog-ng/patterndb.d/postgresql.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;208&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/var/log/scemd.log#/tmp/scemd.log#g&#39;&lt;/span&gt; /etc.defaults/syslog-ng/patterndb.d/scemd.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;209&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/var/log/postgresql.log#/tmp/postgresql.log#g&#39;&lt;/span&gt; /etc.defaults/syslog-ng/patterndb.d/postgresql.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;210&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/usr/bin/systemctl --force poweroff#/etc/rc.local K#g&#39;&lt;/span&gt; /usr/lib/systemd/system/systemd-poweroff.service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;211&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;212&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/buzzeroffcfg=&#34;0x00&#34;/buzzeroffcfg=&#34;0x1b&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;213&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/enable_fan_debug=&#34;0x0&#34;/enable_fan_debug=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;214&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_auto_poweron=&#34;yes&#34;/support_auto_poweron=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;215&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_buzzer=&#34;yes&#34;/support_buzzer=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;216&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_fan=&#34;yes&#34;/support_fan=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;217&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_fan_adjust_dual_mode=&#34;yes&#34;/support_fan_adjust_dual_mode=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;218&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_led_behavior_v2=&#34;yes&#34;/support_led_behavior_v2=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;219&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_power_recovery=&#34;yes&#34;/support_power_recovery=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;220&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_wol=&#34;yes&#34;/support_wol=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;221&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/supportrcpower=&#34;yes&#34;/supportrcpower=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;222&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/supportsystemperature=&#34;yes&#34;/supportsystemperature=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;223&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/supportsystempwarning=&#34;yes&#34;/supportsystempwarning=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;224&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;33m 成功啦！成功啦！成功啦！立即重启猫盘，Enjoy  it!  &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;225&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;rm&lt;/span&gt; -f /root/catd.sh&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;226&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;227&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x01 0x01&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;228&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x31 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;229&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x32 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;230&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x33 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;231&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x30 0x07&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;232&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x34 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;233&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x35 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;234&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x36 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;235&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;236&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;237&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&#34;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;120bak&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;then&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;238&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;33m 如果一直失败，可能是引导方式不同，请另寻高明。  &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;239&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m =================== LonelyGod =================== &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;240&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |                                               | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;241&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |          猫盘群晖DSM7.0三合一修复脚本         | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;242&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m |                                               | &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;243&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;31m ================= https://hin.cool ================= &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;244&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;245&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  rc_local_func &lt;span class=&#34;token variable&#34;&gt;$1&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;246&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;rm&lt;/span&gt; -rf /var/log/*&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;247&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;248&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/dev/null#/var/log/scemd.log#g&#39;&lt;/span&gt; /etc.defaults/syslog-ng/patterndb.d/scemd.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;249&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/dev/null#/var/log/postgresql.log#g&#39;&lt;/span&gt; /etc.defaults/syslog-ng/patterndb.d/postgresql.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;250&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/tmp/scemd.log#/var/log/scemd.log#g&#39;&lt;/span&gt; /etc.defaults/syslog-ng/patterndb.d/scemd.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;251&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/tmp/postgresql.log#/var/log/postgresql.log#g&#39;&lt;/span&gt; /etc.defaults/syslog-ng/patterndb.d/postgresql.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;252&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s#/etc/rc.local K#/usr/bin/systemctl --force poweroff#g&#39;&lt;/span&gt; /usr/lib/systemd/system/systemd-poweroff.service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;253&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;254&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/buzzeroffcfg=&#34;0x1b&#34;/buzzeroffcfg=&#34;0x00&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;255&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/enable_fan_debug=&#34;no&#34;/enable_fan_debug=&#34;0x0&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;256&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_auto_poweron=&#34;no&#34;/support_auto_poweron=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;257&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_buzzer=&#34;no&#34;/support_buzzer=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;258&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_fan=&#34;no&#34;/support_fan=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;259&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_fan_adjust_dual_mode=&#34;no&#34;/support_fan_adjust_dual_mode=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;260&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_led_behavior_v2=&#34;no&#34;/support_led_behavior_v2=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;261&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_power_recovery=&#34;no&#34;/support_power_recovery=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;262&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/support_wol=&#34;no&#34;/support_wol=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;263&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/supportrcpower=&#34;no&#34;/supportrcpower=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;264&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/supportsystemperature=&#34;no&#34;/supportsystemperature=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;265&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/supportsystempwarning=&#34;no&#34;/supportsystempwarning=&#34;yes&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;266&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token builtin class-name&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;token string&#34;&gt;&#34;&lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[1;33m 成功啦！成功啦！成功啦！立即重启猫盘，Enjoy  it!  &lt;span class=&#34;token entity&#34; title=&#34;\e&#34;&gt;\e&lt;/span&gt;[0m&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;267&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token function&#34;&gt;rm&lt;/span&gt; -f /root/catd.sh&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;268&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x00 0x55&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;269&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x01 0x01&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;270&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x31 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;271&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x32 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;272&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x33 0x33&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;273&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x30 0x07&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;274&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x34 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;275&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x35 &lt;span class=&#34;token number&#34;&gt;128&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;276&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  i2cset -y -f &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt; 0x45 0x36 &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;277&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;fi&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;278&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/usr/bin/systemctl daemon-reload&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;猫盘安装黑裙流程省略，开启 ssh 省略，在 ssh 上切换&lt;strong&gt; root 用户&lt;/strong&gt;后执行上述脚本&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 新建一个脚本文件，并复制上述脚本内容&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;vim&lt;/span&gt; catd.sh&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 小猫&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;bash&lt;/span&gt; catd.sh 120x&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 大猫&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;bash&lt;/span&gt; catd.sh 120d&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;如果终端提示成功，切猫盘灯正常点亮了，证明脚本生效。&lt;/p&gt;
+&lt;p&gt;如果有如下提示：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20240711140527.png&#34; alt=&#34;image.png&#34; /&gt;&lt;br /&gt;
+ 可能是因为 windows 换行符导致的异常，通过&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;vim&lt;/span&gt; -b catd.sh&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;可以确认是否每一行都有 &lt;code&gt;^M&lt;/code&gt; ，如果有使用如下命令解决：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/&lt;span class=&#34;token entity&#34; title=&#34;\r&#34;&gt;\r&lt;/span&gt;//g&#39;&lt;/span&gt; catd.sh&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;信息中心显示空白修复&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#信息中心显示空白修复&#34;&gt;#&lt;/a&gt; 信息中心显示空白修复&lt;/h2&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/supportsystempwarning=&#34;yes&#34;/supportsystempwarning=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sed&lt;/span&gt; -i &lt;span class=&#34;token string&#34;&gt;&#39;s/supportsystemperature=&#34;yes&#34;/supportsystemperature=&#34;no&#34;/g&#39;&lt;/span&gt; /etc.defaults/synoinfo.conf&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt; ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/EVE-NG%E9%95%9C%E5%83%8F%E5%AF%BC%E5%85%A5.html</guid>
+            <title>EVE-NG镜像导入</title>
+            <link>https://blog.moehz.com/archives/EVE-NG%E9%95%9C%E5%83%8F%E5%AF%BC%E5%85%A5.html</link>
+            <category term="linux" scheme="https://blog.moehz.com/categories/linux/" />
+            <category term="EVE-NG" scheme="https://blog.moehz.com/tags/EVE-NG/" />
+            <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h2 id=&#34;1eve-ng镜像类型&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#1eve-ng镜像类型&#34;&gt;#&lt;/a&gt; 1.EVE-NG 镜像类型&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Dynamips：思科设备真实 IOS 镜像，类似 GNS3，电脑 CPU 利用率非常高。&lt;/li&gt;
+&lt;li&gt;IOL：IOU 模拟器的镜像，基本完全支持思科设备二、三层功能。&lt;/li&gt;
+&lt;li&gt;QEMU：这已经不是镜像文件，而是 KVM 虚拟机安装操作系统后生成的磁盘文件，通常用来模拟 ASAv、ISE、F5、N9K 等设备。每台设备相当于一台虚拟机，相当吃内存资源。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2dynamips导入过程&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#2dynamips导入过程&#34;&gt;#&lt;/a&gt; 2.Dynamips 导入过程&lt;/h2&gt;
+&lt;h3 id=&#34;21上传文件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#21上传文件&#34;&gt;#&lt;/a&gt; 2.1. 上传文件&lt;/h3&gt;
+&lt;p&gt;镜像保存目录： &lt;code&gt;/opt/unetlab/addons&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;/dynamips   Dynamips 镜像保存目录&lt;/li&gt;
+&lt;li&gt;/iol   IOL 镜像保存目录（运行 IOU 的镜像）&lt;/li&gt;
+&lt;li&gt;/qemu   QEMU 镜像（运行 ASAv、ISE、F5 等镜像）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;将 dynamips 镜像上传到 &lt;code&gt;/opt/unetlab/addons/dynamips&lt;/code&gt;  目录下&lt;/p&gt;
+&lt;h3 id=&#34;22修正权限&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#22修正权限&#34;&gt;#&lt;/a&gt; 2.2. 修正权限&lt;/h3&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/opt/unetlab/wrappers/unl_wrapper -a fixpermissions&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;3iol导入过程&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#3iol导入过程&#34;&gt;#&lt;/a&gt; 3.IOL 导入过程&lt;/h2&gt;
+&lt;p&gt;与 IOL 有关的文件包含&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IOL 的镜像&lt;/li&gt;
+&lt;li&gt;iourc 文件（IOL 的 license 文件）&lt;/li&gt;
+&lt;li&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cDovL0Npc2NvSU9VS2V5Z2VuLnB5&#34;&gt;CiscoIOUKeygen.py&lt;/span&gt;（python 脚本，用于生成 license）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;31上传文件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#31上传文件&#34;&gt;#&lt;/a&gt; 3.1. 上传文件&lt;/h3&gt;
+&lt;p&gt;全部上传到 &lt;code&gt;/opt/unetlab/addons/iol/bin&lt;/code&gt;  目录下&lt;/p&gt;
+&lt;h3 id=&#34;32license生成&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#32license生成&#34;&gt;#&lt;/a&gt; 3.2.license 生成&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;方法一&lt;br /&gt;
+确保 CiscoIOUKeygen.py 已经上传后，执行命令&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token builtin class-name&#34;&gt;cd&lt;/span&gt; /opt/unetlab/addons/iol/bin/&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;python CiscoIOUKeygen.py &lt;span class=&#34;token operator&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;grep&lt;/span&gt; -A &lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt; ‘license’ &lt;span class=&#34;token operator&#34;&gt;&gt;&lt;/span&gt; iourc&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;生成 license 代码&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;方法二：手动修改&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@eve-ng:~&lt;span class=&#34;token comment&#34;&gt;#cd/opt/unetlab/addons/iol/bin&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@eve-ng:/opt/unetlab/addons/iol/bin&lt;span class=&#34;token comment&#34;&gt;#ls&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;CiscoIOUKeygen.py&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i86bi-linux-l2-adventerprisek9-15.1a.bin&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i86bi-linux-l2-ipbasek9-15.1a.bin&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i86bi-linux-l2-upk9-12.2.bin&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i86bi-linux-l2-upk9-15.0a.bin&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i86bi-linux-l3-adventerprisek9-12.4.bin&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i86bi-linux-l3-adventerprisek9-15.2.2.15T.bin&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i86bi-linux-l3-adventerprisek9-15.2.4M1.bin&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;11&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;i86bi-linux-l3-adventerprisek9-15.4.1T.bin&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;12&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;iourc&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;13&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@eve-ng:/opt/unetlab/addons/iol/bin&lt;span class=&#34;token comment&#34;&gt;# pythonCiscoIOUKeygen.py&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;14&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;*********************************************************************&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;15&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;CiscoIOU License Generator – Kal &lt;span class=&#34;token number&#34;&gt;2011&lt;/span&gt;, python port of &lt;span class=&#34;token number&#34;&gt;2006&lt;/span&gt; Cversion&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;16&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;Modified to work with python3 by c_d2014&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;17&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token assign-left variable&#34;&gt;hostid&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;007f0101, &lt;span class=&#34;token assign-left variable&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;eve-ng, &lt;span class=&#34;token assign-left variable&#34;&gt;ioukey&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;7f0343&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;18&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;Addthe following text to ~/.iourc:&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;19&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;license&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;20&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;21&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt; &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;22&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;23&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;eve-ng&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; 972f30267ef51616&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;24&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;Youcan disable the phone home feature with something like:&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;25&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;echo‘127.0.0.127 xml.cisco.com’ &lt;span class=&#34;token operator&#34;&gt;&gt;&gt;&lt;/span&gt;/etc/hosts&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;26&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@eve-ng:/opt/unetlab/addons/iol/bin&lt;span class=&#34;token comment&#34;&gt;#&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;编写 license 文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;root@eve-ng:/opt/unetlab/addons/iol/bin# vim iourc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;把原来的删除掉，重新粘贴新的 license 代码&lt;/p&gt;
+&lt;h3 id=&#34;33修正权限&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#33修正权限&#34;&gt;#&lt;/a&gt; 3.3. 修正权限&lt;/h3&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/opt/unetlab/wrappers/unl_wrapper -a fixpermissions&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;4qemu导入过程&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#4qemu导入过程&#34;&gt;#&lt;/a&gt; 4.QEMU 导入过程&lt;/h2&gt;
+&lt;h3 id=&#34;41上传文件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#41上传文件&#34;&gt;#&lt;/a&gt; 4.1. 上传文件&lt;/h3&gt;
+&lt;p&gt;上传的文件类型为： &lt;code&gt;qcow2&lt;/code&gt; ，位置是 &lt;code&gt;/opt/unetlab/addons/qemu/&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;qcow2 可以在 pve 或者 unraid 下转化 vmdk 文件获得，命令参考：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;qemu-img convert -O qcow2 win7.vmdk win7.qcow2&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h3 id=&#34;42修正权限&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#42修正权限&#34;&gt;#&lt;/a&gt; 4.2. 修正权限&lt;/h3&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;/opt/unetlab/wrappers/unl_wrapper -a fixpermissions&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt; ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/TrueNAS%20k38-nextcloud%E5%AE%B9%E5%99%A8%E4%B8%8B%E7%A2%B0%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98.html</guid>
+            <title>TrueNAS k38-nextcloud容器下碰到的一些问题</title>
+            <link>https://blog.moehz.com/archives/TrueNAS%20k38-nextcloud%E5%AE%B9%E5%99%A8%E4%B8%8B%E7%A2%B0%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98.html</link>
+            <category term="NAS" scheme="https://blog.moehz.com/categories/NAS/" />
+            <category term="NAS" scheme="https://blog.moehz.com/tags/NAS/" />
+            <category term="TrueNAS" scheme="https://blog.moehz.com/tags/TrueNAS/" />
+            <category term="容器" scheme="https://blog.moehz.com/tags/%E5%AE%B9%E5%99%A8/" />
+            <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h2 id=&#34;如何执行occ&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#如何执行occ&#34;&gt;#&lt;/a&gt; 如何执行 occ&lt;/h2&gt;
+&lt;h3 id=&#34;确定容器的名字&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#确定容器的名字&#34;&gt;#&lt;/a&gt; 确定容器的名字&lt;/h3&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@truenas&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;~&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token comment&#34;&gt;# docker ps&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS     NAMES&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;6ecd1e2ac244   093e7ccba7e4        &lt;span class=&#34;token string&#34;&gt;&#34;/entrypoint.sh apac…&#34;&lt;/span&gt;   &lt;span class=&#34;token number&#34;&gt;46&lt;/span&gt; minutes ago   Up &lt;span class=&#34;token number&#34;&gt;46&lt;/span&gt; minutes             k8s_nextcloud_nextcloud-5c494664f5-zs4xd_ix-nextcloud_cd216bc2-4fc4-420d-a80c-cdd234bb198d_0&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;这里会有一堆 nextcloud 相关的容器出现，只关注 &lt;code&gt;k8s_nextcloud&lt;/code&gt;  开头的第一个容器就行，复制下这个名字或者 ID（ID 比较好，名字太长了），后面会用&lt;/p&gt;
+&lt;h3 id=&#34;执行occ&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#执行occ&#34;&gt;#&lt;/a&gt; 执行 occ&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;命令中的容器 ID 注意换成自己的，ID 也可以不用输完整，只要不和别的冲突就行，比如 ID：6ecd1e2ac244，我可以只写 6ecd1&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 以修复索引的 occ 命令为例&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@truenas&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;~&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token comment&#34;&gt;# docker exec 6ecd1 --user www-data  php occ db:add-missing-indices&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;解决提示php-imagick没有svg-support&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#解决提示php-imagick没有svg-support&#34;&gt;#&lt;/a&gt; 解决提示 php-imagick 没有 SVG support&lt;/h2&gt;
+&lt;p&gt;跟上面一样，首先得确认容器名，然后执行下述命令&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意容器 ID 需要改成自己的&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@truenas&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;~&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token comment&#34;&gt;# docker exec 6ecd1 apt -y update &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@truenas&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;~&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token comment&#34;&gt;# docker exec 6ecd1 apt -y install libmagickcore-6.q16-6-extra&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;添加外部文件到nextcloud&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#添加外部文件到nextcloud&#34;&gt;#&lt;/a&gt; 添加外部文件到 nextcloud&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;将本地文件直接放入 nextcloud 目录中，nextcloud 不会直接显示，因为数据库没有相应文件，需要执行扫描命令&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@truenas&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;~&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token comment&#34;&gt;# docker exec --user www-data 6ecd1 php occ files:scan --all&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;部分优化配置&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#部分优化配置&#34;&gt;#&lt;/a&gt; 部分优化配置&lt;/h2&gt;
+&lt;h3 id=&#34;设置定时任务&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#设置定时任务&#34;&gt;#&lt;/a&gt; 设置定时任务&lt;/h3&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root@truenas&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;~&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token comment&#34;&gt;# crontab -u www-data -e &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;no &lt;span class=&#34;token function&#34;&gt;crontab&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;for&lt;/span&gt; www-data - using an empty one&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;Select an editor.  To change later, run &lt;span class=&#34;token string&#34;&gt;&#39;select-editor&#39;&lt;/span&gt;&lt;span class=&#34;token builtin class-name&#34;&gt;.&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;. /bin/nano        &lt;span class=&#34;token operator&#34;&gt;&amp;lt;&lt;/span&gt;---- easiest&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token number&#34;&gt;2&lt;/span&gt;. /usr/bin/mcedit&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token number&#34;&gt;3&lt;/span&gt;. /usr/bin/vim.tiny&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;Choose &lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;-3 &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;: &lt;span class=&#34;token number&#34;&gt;3&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;crontab: installing new &lt;span class=&#34;token function&#34;&gt;crontab&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;11&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;12&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;13&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 选择你习惯的编辑工具进行编辑，在打开的编辑器中加入下述命令&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;14&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;*/15 * * * * docker &lt;span class=&#34;token builtin class-name&#34;&gt;exec&lt;/span&gt; --user www-data 6ecd1 php cron.php&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt; ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/Unraid%E5%95%86%E5%BA%97%E8%AE%BF%E9%97%AE%E4%BC%98%E5%8C%96.html</guid>
+            <title>Unraid商店访问优化</title>
+            <link>https://blog.moehz.com/archives/Unraid%E5%95%86%E5%BA%97%E8%AE%BF%E9%97%AE%E4%BC%98%E5%8C%96.html</link>
+            <category term="NAS" scheme="https://blog.moehz.com/categories/NAS/" />
+            <category term="NAS" scheme="https://blog.moehz.com/tags/NAS/" />
+            <category term="UNRAID" scheme="https://blog.moehz.com/tags/UNRAID/" />
+            <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h2 id=&#34;1-修改host&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#1-修改host&#34;&gt;#&lt;/a&gt; 1. 修改 host&lt;/h2&gt;
+&lt;p&gt;将下述命令加入开机脚本，脚本位置： &lt;code&gt;/boot/config/go&lt;/code&gt;&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;wget&lt;/span&gt; -qO - https://raw.hellogithub.com/hosts &lt;span class=&#34;token operator&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;cat&lt;/span&gt; - &lt;span class=&#34;token operator&#34;&gt;&gt;&gt;&lt;/span&gt; /etc/hosts&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;2-设置docker镜像&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#2-设置docker镜像&#34;&gt;#&lt;/a&gt; 2. 设置 docker 镜像&lt;/h2&gt;
+&lt;p&gt;在 &lt;code&gt;/boot/config/go&lt;/code&gt;  中加入下面这段：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;mkdir&lt;/span&gt; -p /etc/docker&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;tee&lt;/span&gt; /etc/docker/daemon.json &lt;span class=&#34;token operator&#34;&gt;&amp;lt;&amp;lt;-&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;EOF&#39;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&amp;#123;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &#34;registry-mirrors&#34;: [&#34;https://xxxx.mirror.aliyuncs.com&#34;]&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&amp;#125;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;EOF&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;&lt;code&gt;https://xxxx.mirror.aliyuncs.com&lt;/code&gt;  更换成你需要加速的镜像源，我这里使用的是阿里云申请的镜像源，不展示了&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/%E7%BE%A4%E6%99%96%E6%8C%82%E8%BD%BDunraid%E6%96%87%E4%BB%B6%E5%A4%B9.html</guid>
+            <title>群晖挂载unraid文件夹</title>
+            <link>https://blog.moehz.com/archives/%E7%BE%A4%E6%99%96%E6%8C%82%E8%BD%BDunraid%E6%96%87%E4%BB%B6%E5%A4%B9.html</link>
+            <category term="NAS" scheme="https://blog.moehz.com/categories/NAS/" />
+            <category term="NAS" scheme="https://blog.moehz.com/tags/NAS/" />
+            <category term="群晖" scheme="https://blog.moehz.com/tags/%E7%BE%A4%E6%99%96/" />
+            <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h2 id=&#34;1开启群晖nfs服务&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#1开启群晖nfs服务&#34;&gt;#&lt;/a&gt; 1. 开启群晖 NFS 服务&lt;/h2&gt;
+&lt;p&gt;控制面板 --&amp;gt; 文件服务 --&amp;gt;NFS，打勾启用 NFS 服务&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20230923102211.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;2开启unraidnfs服务&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#2开启unraidnfs服务&#34;&gt;#&lt;/a&gt; 2. 开启 unraidNFS 服务&lt;/h2&gt;
+&lt;p&gt;SETTINGS--&amp;gt;NFS，将 Enable NFS 改为 YES&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20230923102358.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;3unraid配置需要被挂载的文件夹&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#3unraid配置需要被挂载的文件夹&#34;&gt;#&lt;/a&gt; 3.unraid 配置需要被挂载的文件夹&lt;/h2&gt;
+&lt;p&gt;进入文件夹，下拉到 NFS Security Settings，&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Export：选Yes 
+Security：private
+Rule：192.168.2.170(sec=sys,rw,sync,no_subtree_check,no_root_squash,anongid=100,anonuid=1000)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;这里 192.168.2.170 是群晖的 IP，请根据实际情况修改&lt;/strong&gt;&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20230923102648.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;4群晖挂载unraid目录&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#4群晖挂载unraid目录&#34;&gt;#&lt;/a&gt; 4. 群晖挂载 unraid 目录&lt;/h2&gt;
+&lt;p&gt;File Station--&amp;gt; 工具 --&amp;gt; 装载远程文件夹 --&amp;gt;NFS 共享文件夹&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20230923103058.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;填入各项信息&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;文件夹：192.168.2.233:/mnt/user/Data
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;其中 &lt;code&gt;192.168.2.233&lt;/code&gt;  为 unraid 的 IP, &lt;code&gt;/mnt/user/Data&lt;/code&gt;  为挂载的路径，需按实际情况调整；版本，协议保持默认，装载路径自行选择&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img/20230923103443.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/unraid%E5%AF%BC%E5%85%A5ova%E8%99%9A%E6%8B%9F%E6%9C%BA.html</guid>
+            <title>unraid导入ova虚拟机</title>
+            <link>https://blog.moehz.com/archives/unraid%E5%AF%BC%E5%85%A5ova%E8%99%9A%E6%8B%9F%E6%9C%BA.html</link>
+            <category term="NAS" scheme="https://blog.moehz.com/categories/NAS/" />
+            <category term="NAS" scheme="https://blog.moehz.com/tags/NAS/" />
+            <category term="UNRAID" scheme="https://blog.moehz.com/tags/UNRAID/" />
+            <category term="虚拟机" scheme="https://blog.moehz.com/tags/%E8%99%9A%E6%8B%9F%E6%9C%BA/" />
+            <pubDate>Mon, 25 Sep 2023 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h2 id=&#34;1上传ova文件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#1上传ova文件&#34;&gt;#&lt;/a&gt; 1. 上传 ova 文件&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;建立一个虚拟机后，删除硬盘，可以看到 domain 下面多出一个文件夹&lt;/li&gt;
+&lt;li&gt;在该文件夹下上传 ova 文件&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;2转化文件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#2转化文件&#34;&gt;#&lt;/a&gt; 2. 转化文件&lt;/h2&gt;
+&lt;h3 id=&#34;21解压缩&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#21解压缩&#34;&gt;#&lt;/a&gt; 2.1. 解压缩&lt;/h3&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;tar&lt;/span&gt; -xvf EVE-NG.ova&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h3 id=&#34;22转化虚拟磁盘&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#22转化虚拟磁盘&#34;&gt;#&lt;/a&gt; 2.2. 转化虚拟磁盘&lt;/h3&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;qemu-img convert -O qcow2 EVE-NG.vmdk EVE-NG.qcow2&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;3-挂载虚拟磁盘&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#3-挂载虚拟磁盘&#34;&gt;#&lt;/a&gt; 3. 挂载虚拟磁盘&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img/20230925184328.png&#34; alt=&#34;image.png&#34; /&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/github_apps.html</guid>
+            <title>github上的一些好用的软件</title>
+            <link>https://blog.moehz.com/archives/github_apps.html</link>
+            <category term="software" scheme="https://blog.moehz.com/categories/software/" />
+            <category term="github" scheme="https://blog.moehz.com/tags/github/" />
+            <category term="WIN" scheme="https://blog.moehz.com/tags/WIN/" />
+            <category term="MAC" scheme="https://blog.moehz.com/tags/MAC/" />
+            <pubDate>Sat, 23 Jul 2022 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;blockquote&gt;
+&lt;p&gt;都是一些我比较喜欢用的，分享给大家&lt;br /&gt;
+封面图：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly93d3cucGl4aXYubmV0L2FydHdvcmtzLzgzMzE2NTEzJUVGJUJDJThDJUU0JUJEJTlDJUU4JTgwJTg1JUVGJUJDJTlB&#34;&gt;https://www.pixiv.net/artworks/83316513，作者：&lt;/span&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly93d3cucGl4aXYubmV0L3VzZXJzLzMzNTU4NzA1&#34;&gt;画师 JW&lt;/span&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;windows应用&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#windows应用&#34;&gt;#&lt;/a&gt; WINDOWS 应用&lt;/h1&gt;
+&lt;h2 id=&#34;twinkle-tray&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#twinkle-tray&#34;&gt;#&lt;/a&gt; twinkle-tray&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img202207231236378.png#vwid=664&amp;amp;vhei=377&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;URL: &lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL3hhbmRlcmZyYW5nb3MvdHdpbmtsZS10cmF5&#34;&gt;https://github.com/xanderfrangos/twinkle-tray&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;你可以直接通过这个软件直接进行显示屏的亮度调节，而不需要按显示器的控制按钮。它的功能如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;定时亮度调节&lt;/li&gt;
+&lt;li&gt;通过快捷键或者软件中的按钮一键关闭屏幕&lt;/li&gt;
+&lt;li&gt;调节对比度&lt;/li&gt;
+&lt;li&gt;音量调节&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这款软件的图标和界面都和 windows 原生的风格非常一致，安装后就像系统内置的功能一样。需要注意的是这款软件通过 DDC/CI 直接控制显示器的参数，所以需要你的显示器支持 DDC/CI 并开启。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img202207231239449.png#vwid=1791&amp;amp;vhei=1260&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;个人觉得，最好用的功能是可以定时调节亮度，我会设置白天 80% 的亮度，晚上自动降低到 30% 的亮度，好让白天使用体验好，晚上不伤眼。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img202207231238970.png#vwid=1791&amp;amp;vhei=1260&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&#34;picgo&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#picgo&#34;&gt;#&lt;/a&gt; PicGo&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img202207231239116.png#vwid=1402&amp;amp;vhei=790&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;URL：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL01vbHVuZXJmaW5uL1BpY0dvLw==&#34;&gt;https://github.com/Molunerfinn/PicGo/&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;这个就不多说了，多平台的图床软件，懂的都懂&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&#34;motrix&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#motrix&#34;&gt;#&lt;/a&gt; Motrix&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img/202207231242592.png#vwid=876&amp;amp;vhei=688&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;URL：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL2FnYWx3b29kL01vdHJpeA==&#34;&gt;https://github.com/agalwood/Motrix&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Motrix 是一款好看的多平台下载器，支持下载 HTTP、FTP、BT、磁力链等资源。通过内置的 Aria2 实现多线程下载，也可以配合浏览器插件接管下载。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/202207231327529.png#vwid=1265&amp;amp;vhei=948&#34; alt=&#34;&#34; /&gt;&lt;br /&gt;
+界面比较美观，不想用破解软件或者国产毒瘤的可以尝试一下。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&#34;pomotroid&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#pomotroid&#34;&gt;#&lt;/a&gt; pomotroid&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img/202207231247793.png#vwid=1302&amp;amp;vhei=775&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;URL：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL1NwbG9kZS9wb21vdHJvaWQ=&#34;&gt;https://github.com/Splode/pomotroid&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;一款简单好用的番茄钟软件，我用来配合升降桌提醒自己站立交替的，大家也可以用来提醒自己喝水啊，学习间隔提醒自己休息一下呀之类的。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&#34;steam&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#steam&#34;&gt;#&lt;/a&gt; steam++&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img/202207231306594.png#vwid=1661&amp;amp;vhei=1242&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;URL: &lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL0JleW9uZERpbWVuc2lvbi9TdGVhbVRvb2xz&#34;&gt;https://github.com/BeyondDimension/SteamTools&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;自从 steam 出了中国特色版后，网络问题就越发严重，好友出不来，创意工坊进不去，商店时而进不去，各种错误代码接踵而来...&lt;/p&gt;
+&lt;p&gt;如果你也曾被这些问题困扰，那么这款软件推荐给你，让你告别各种错误代码。并且它的网络加速不仅针对 steam，你还可以用它来解决 origin,Uplay,Epic,github,pixiv，各种国外网盘，国外验证码等等打不开的网络问题。&lt;/p&gt;
+&lt;p&gt;此外，它的功能还不止于此，它还支持：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;多 steam 账号的一键登录，离线登录等&lt;/li&gt;
+&lt;li&gt;本地令牌&lt;/li&gt;
+&lt;li&gt;自动挂卡&lt;br /&gt;
+总之，强烈安利给大家&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1 id=&#34;mac软件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#mac软件&#34;&gt;#&lt;/a&gt; MAC 软件&lt;/h1&gt;
+&lt;h2 id=&#34;playcover&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#playcover&#34;&gt;#&lt;/a&gt; PlayCover&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img/202207231250527.png#vwid=1287&amp;amp;vhei=929&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;URL：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL1BsYXlDb3Zlci9QbGF5Q292ZXI=&#34;&gt;https://github.com/PlayCover/PlayCover&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;如果你也使用新款的 Apple slic 的 macbook，这是一款你绝对不容错过的 app。众所周知，因为苹果不可告人的原因，他们又侧载安装 ios 应用的功能封掉了，自某版本起就不能直接安装 ios 应用了。&lt;/p&gt;
+&lt;p&gt;因为鄙人当时玩原神，寻找了一下发现了这个软件。你可以借助它，安装未在 mac 应用商店上架的 IOS 应用，比如原神，我测试运行画质还不错，且支持键盘映射和手柄，我是通过手柄游玩的，还是挺舒服的。&lt;/p&gt;
+&lt;p&gt;&lt;s&gt;虽然我早就弃坑了&lt;/s&gt;，但有需要的人推荐使用该 APP&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&#34;monitorcontrol&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#monitorcontrol&#34;&gt;#&lt;/a&gt; MonitorControl&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img/202207231258951.png#vwid=1430&amp;amp;vhei=1271&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;URL：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL01vbml0b3JDb250cm9sL01vbml0b3JDb250cm9s&#34;&gt;https://github.com/MonitorControl/MonitorControl&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;界面简洁美观，与 mac 系统融合度很高。功能类似于 windows 下的 twinkle-tray，用来调节屏幕亮度和音量。因为苹果原生的亮度调节对大多数外接的显示器是不起作用的，借助这个软件才能方便的调节，推荐给需要的小伙伴。&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/ACSD.html</guid>
+            <title>ACS Discovery</title>
+            <link>https://blog.moehz.com/archives/ACSD.html</link>
+            <category term="网络" scheme="https://blog.moehz.com/categories/%E7%BD%91%E7%BB%9C/" />
+            <category term="TR069" scheme="https://blog.moehz.com/categories/%E7%BD%91%E7%BB%9C/TR069/" />
+            <category term="TR069" scheme="https://blog.moehz.com/tags/TR069/" />
+            <category term="ACS" scheme="https://blog.moehz.com/tags/ACS/" />
+            <pubDate>Tue, 28 Jun 2022 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;p&gt;原文链接：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cDovL3d3dy5xYWNhZmUuY29tL2tub3dsZWRnZWJhc2UvdHItMDY5LXRyYWluaW5nLXNlcmllcy1hY3MtZGlzY292ZXJ5Lw==&#34;&gt;http://www.qacafe.com/knowledgebase/tr-069-training-series-acs-discovery/&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;In TR-069, the CPE is always initiates a session. When making first contact with an ACS, how does it know the ACS URL it is supposed to contact?&lt;/p&gt;
+&lt;p&gt;There are 3 mechanisms suggested in TR-069 to do this.&lt;/p&gt;
+&lt;p&gt;The first is that the CPE has its bootstrap ACS pre-configured by factory default. This is usually the case with CPE that are deployed by a service provider.&lt;/p&gt;
+&lt;p&gt;The second mechanism involves the ACS URL being configured through a local protocol that has access to the CWMP data model, such as UPnP as defined in TR-064. Service providers may do this with a technician or through some local software installation for the Broadband Subscriber.&lt;/p&gt;
+&lt;p&gt;The third mechanism is using DHCP options to configure the ACS URL.&lt;/p&gt;
+&lt;h2 id=&#34;dhcp-discovery-of-the-acs-url&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#dhcp-discovery-of-the-acs-url&#34;&gt;#&lt;/a&gt; DHCP Discovery of the ACS URL&lt;/h2&gt;
+&lt;p&gt;Lastly, &lt;strong&gt;TR-069 defines a mechanism for using DHCP options to configure the ACS URL.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;When a CPE comes online, the DHCP server that assigns its IP address can provide the ACS URL in certain DHCP options.&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20220628155512.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A CPE can announce that it supports this capability in its DHCP DISCOVER message by including a special string anywhere in the DHCP Vendor Class Identifier Option 60, or in the DHCP V-I Vendor Class Option 124.&lt;/p&gt;
+&lt;p&gt;If the CPE supports IPv6, it can use the DHCPv6 Vendor Class Option 16.&lt;/p&gt;
+&lt;p&gt;Additionally, the CPE can include DHCP option 55 to specify whether it prefers to receive the URL in DHCP option 43 or option 125.&lt;/p&gt;
+&lt;p&gt;The DHCP server then responds with the URL of the ACS specified in DHCP option 43, 125, or both in its DHCP OFFER message.&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20220628155531.png&#34; alt=&#34;&#34; /&gt;&lt;br /&gt;
+If the server sends both, the CPE must use the URL specified in the option it requested. If it didn’t request a specific option, it must use the URL given in option 43.&lt;/p&gt;
+&lt;p&gt;Typically, a CPE armed with its new ACS URL starts a CWMP session with the new ACS, sending an Inform with the BOOTSTRAP event. This triggers the ACS to recognize the new CPE and begin initial configuration.&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/KTC_G42P5.html</guid>
+            <title>使用一款42寸OLED显示器是什么体验</title>
+            <link>https://blog.moehz.com/archives/KTC_G42P5.html</link>
+            <category term="显示器" scheme="https://blog.moehz.com/tags/%E6%98%BE%E7%A4%BA%E5%99%A8/" />
+            <category term="OLED" scheme="https://blog.moehz.com/tags/OLED/" />
+            <category term="KTC" scheme="https://blog.moehz.com/tags/KTC/" />
+            <pubDate>Sat, 25 Jun 2022 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;p&gt;最近我购买了 KTC—G42P5 显示器，是一块 OLED 的 42 寸显示器，我已经使用了 10 天左右了，来谈谈它的使用体验。&lt;/p&gt;
+&lt;h2 id=&#34;规格&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#规格&#34;&gt;#&lt;/a&gt; 规格&lt;/h2&gt;
+&lt;p&gt;先说说硬件规格：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;4K 分辨率 138Hz 刷新率（默认 120hz 可在 osd 菜单开启超频至 138Hz 选项）&lt;/li&gt;
+&lt;li&gt;42 寸 LG WEBE OLED 面板&lt;/li&gt;
+&lt;li&gt;得益于 oled 面板，GtG 响应 0.1ms&lt;/li&gt;
+&lt;li&gt;支持 Freesync、G-Sync 兼容&lt;/li&gt;
+&lt;li&gt;色域：99% P3；89% ARGB；100% SRGB（支持色域限缩）&lt;/li&gt;
+&lt;li&gt;号称经过单台校准，ΔE&amp;lt;2&lt;/li&gt;
+&lt;li&gt;2 个 8W 的内置音箱&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这个显示器的显示规格基本是拉满的，由于 OLED 天然的超低响应速度，在玩一些游戏时会有一定帮助（虽然对我来说意义不大）。这篇主要讲我使用过程中遇到的一些惊喜或者问题，不会从专业角度对它进行测评，仅作为用户使用角度出发，可能出现偏差或者错误。&lt;/p&gt;
+&lt;p&gt;其实现在有不少发烧友选择使用 LG C1/C2 面板的小尺寸电视作为电脑显示器，相较于这台显示器，有各种 HDR 认证，GYSNC 认证，大厂调教等优势，缺点就是接口上不丰富了。所以先来谈谈接口，它支持 2 个 HDMI 2.1（不是满血的，但支持到 4k 138hz 的带宽是够的），1 个 DP 接口，1 个支持 90W 反充的 typec 接口。USB 方面也配备了一个 USB 上行，2 个 USB 下行接口，可以用于实现 KVM。下面我来逐个谈谈各种接口的使用体验。&lt;/p&gt;
+&lt;h2 id=&#34;接口上的体验报告&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#接口上的体验报告&#34;&gt;#&lt;/a&gt; 接口上的体验报告&lt;/h2&gt;
+&lt;p&gt;首先大概说一下测试使用的连接设备，是我几年前配的一台电脑，cpu 是 9900k，显卡矿潮时卖了，最近显卡价格回落，买了盈通 3080 花嫁，测试这台显示器应该问题不大。DP 连接电脑可以同时开启 4K 138hz 10bit 色深 HDR Freesync，DP 还是挺稳定的，没有太多好说的。&lt;/p&gt;
+&lt;p&gt;HDMI 2.1 一般是用于游戏机，我既没有 PS5 也没 XBOX，所以懒得测了。下面谈谈 type c 接口吧，对接的测试设备是 macbook air m1 版本，连接后可以正常充电以及显示画面。4k，138hz 刷新，HDR 都是正常的，但是它存在很多兼容性的小问题。首先它不能通过显示器的音箱播放声音，一旦选择了由显示器发声，无论网络流媒体还是本地视频，都会播放不停的加速，几秒钟就播完，且没有声音或者有异常声音，系统里选择使用笔记本的音响播放就正常。这在我的另一台支持 typec 一线通的 IPS 显示器上没有发生过。然后还有一个问题，是在 mac 里对显示器做好设置后，每次重新连接都会被恢复，需要重新配置，这个不知道是 macOS 的锅，还是显示器的锅，以前没有注意过。&lt;/p&gt;
+&lt;p&gt;USB 接口需要跟 KVM 一起讲，首先功能是正常的，但是体验并不好。KVM 最佳的体验是我视频输入源切换成哪台设备，USB 设备就自动切到哪台设备。但是 KTC 的这台显示器并不能自动切换，需要手动选择。然后显示器 KVM 有个通病，如果接蓝牙鼠标，会时不时出现卡顿，可能是显示器存在干扰，总之体验不是很好。&lt;/p&gt;
+&lt;h2 id=&#34;屏幕上的体验报告&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#屏幕上的体验报告&#34;&gt;#&lt;/a&gt; 屏幕上的体验报告&lt;/h2&gt;
+&lt;p&gt;开启 HDR 后效果是真的好，这块 LG 的 OLED 面板 10% 的窗口亮度可以达到 700nit，虽然跟 mini led 相比亮度远远不如，但是 OLED 是完全没有光晕的。得益于可以关闭像素点显示黑色，有超高对比度，所以即使只有 700nit，也能很好的播放 HDR 片源或者游玩 HDR 游戏，效果一般都会超过 Miniled。可以说 OLED 除去寿命问题，是目前最优的显示方案。&lt;/p&gt;
+&lt;p&gt;但是，它作为电脑显示器来说，存在许多痛点，至少 KTC 这台显示器上存在。以下为我使用发现的问题&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;为了防止烧屏，加入像素偏移功能，导致边缘的图案（比如桌面应用图标）可能会移出屏幕外而看不到&lt;/li&gt;
+&lt;li&gt;也是为了防止烧屏，当全屏白色区域过大时，会突然降亮度&lt;/li&gt;
+&lt;li&gt;还是为了防止烧屏，即使你使用 windows 黑色主题，黑色壁纸，当没有大范围画面变动的时候，它还是会慢慢降低亮度，最后关闭屏幕防烧屏&lt;br /&gt;
+还有一些你自己为了防烧屏，做的一些为难自己的操作，比如设置任务栏自动隐藏，使用黑色主题，设置暗色调动态壁纸，浏览器使用插件让网页背景变成黑色等等。总之等于请了个大爷回家，得小心伺候着。特别是以上列举的第三条缺点，真的很影响体验。比如我在写这篇稿子的时候，就会因为画面没有大范围变动，亮度不断降低且期间显示器多次关闭屏幕...&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当然这位大爷伺候好了，玩游戏看电源，尤其是支持 HDR 的资源时确实能给你前所未有的爽感，即使晚上关灯，黑色区域也是完完全全的黑色，不用担心漏光。而且这块 WEBE 面板也有个 LG C1 没有的优势，就是它有纳米纹理玻璃，可以很好的抑制反光以及炫光现象的发生。以及它使用了 DC 调光，和硬件级抗蓝光选项，如果你愿意看发黄的画面的话，可以做到比较护眼。&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#总结&#34;&gt;#&lt;/a&gt; 总结&lt;/h2&gt;
+&lt;p&gt;很多人担心 42 寸会不会太大，难以适应。我发表一下看法哈，我是 120*60 的升降桌，之前使用的是一款 32 寸的显示器，换到 42 寸，并没有感觉需要适应，只感觉面积大了反而更好多窗口运行了。但是不得不说，用大屏全屏浏览网页会比较难受，一般都会窗口。玩游戏看视频就更不用说了，大屏只会更加震撼。当然我也测试看了一下 1080P 的网络片源，在正常距离全屏观看还是能接受，而且 B 站和主流视频平台的 4K 资源也越来越多了，这个问题应该会越来越不是问题，你如果实在觉得糊可以离远点，窗口观看或者换个更宽的桌子。&lt;/p&gt;
+&lt;p&gt;但即使这样，我依然不推荐现阶段购买 OLED 显示器，主要是 OLED 显示器这个烧屏问题真的不适合做 PC 显示器。还是等更多分区的 miniled 产品吧，除非你的电脑仅仅只用于娱乐，而不用于办公。不然时不时亮度降低或者关闭屏幕真的让你心态爆炸，你也得为了它改变一些使用习惯，OLED 现阶段还是太难伺候了...&lt;/p&gt;
+&lt;p&gt;PS：&lt;br /&gt;
+推荐购买这款显示器的玩家购买北弧一款支持 18KG 承重的支架，目前除了爱格升一款 2K 的支架外就只有这款支架能支撑这么大重量的显示器。我测试承重没有问题，也不会沉头，升降也还算顺滑，但转向比较麻烦。嘛，这么大显示器，基本能撑住就行，也不会有什么希望移动它的时候。&lt;/p&gt;
+&lt;p&gt;壁纸推荐使用 steam 的 wallpaper engine, 以前我是觉得动态壁纸花里胡哨，现在 OLED 显示器确实有了它的意义，因为可以防烧屏，我推荐一款叫做 Elden Ring Mystery One 的菈尼动态壁纸，大面积的暗色星空上是蓝色的菈尼老婆，好看又护屏。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/202206251022586.png#vwid=3840&amp;amp;vhei=2160&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/pve_no_webUI.html</guid>
+            <title>关于PVE7.1 webUI一片空白的解决办法</title>
+            <link>https://blog.moehz.com/archives/pve_no_webUI.html</link>
+            <category term="linux" scheme="https://blog.moehz.com/categories/linux/" />
+            <category term="PVE" scheme="https://blog.moehz.com/tags/PVE/" />
+            <category term="Proxmox" scheme="https://blog.moehz.com/tags/Proxmox/" />
+            <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h2 id=&#34;问题描述&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#问题描述&#34;&gt;#&lt;/a&gt; 问题描述&lt;/h2&gt;
+&lt;p&gt;PVE 虚拟机在一次重启后 webUI 打开就是一片空白，注意，并非打不开，而是不显示任何东西。&lt;/p&gt;
+&lt;p&gt;使用 &lt;code&gt;F12&lt;/code&gt;  打开开发者工具查看，可以看到如下信息：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20220304131402.png&#34; alt=&#34;&#34; /&gt;&lt;br /&gt;
+关键信息在于：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;figcaption data-lang=&#34;HTML&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;no such file &#39;/PVE/StdWorkspace.js&#39;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;解决办法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#解决办法&#34;&gt;#&lt;/a&gt; 解决办法&lt;/h2&gt;
+&lt;p&gt;搜索了很多教程，花了好几天才解决了问题，教程参考：&lt;br /&gt;
+&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9zZXJ2ZXJhZG1pbi5ydS9mb3J1bS9wcm94bW94L25lLW90a3J5dmFldHN5YS13ZWItaW50ZXJmZWpzLw==&#34;&gt;https://serveradmin.ru/forum/proxmox/ne-otkryvaetsya-web-interfejs/&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;按照其中的教程操作就能解决问题：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;apt&lt;/span&gt; update &lt;span class=&#34;token operator&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;apt&lt;/span&gt; upgrade&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;apt&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;install&lt;/span&gt; -f&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;apt&lt;/span&gt; dist-upgrade&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pvecm updatecerts --force&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;service&lt;/span&gt; pveproxy restart&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt; ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/Redmi_X08E.html</guid>
+            <title>Redmi小爱触屏音箱Pro8</title>
+            <link>https://blog.moehz.com/archives/Redmi_X08E.html</link>
+            <category term="life" scheme="https://blog.moehz.com/categories/life/" />
+            <category term="体验" scheme="https://blog.moehz.com/categories/life/%E4%BD%93%E9%AA%8C/" />
+            <category term="小米" scheme="https://blog.moehz.com/tags/%E5%B0%8F%E7%B1%B3/" />
+            <category term="小爱" scheme="https://blog.moehz.com/tags/%E5%B0%8F%E7%88%B1/" />
+            <category term="智能设备" scheme="https://blog.moehz.com/tags/%E6%99%BA%E8%83%BD%E8%AE%BE%E5%A4%87/" />
+            <pubDate>Sat, 19 Feb 2022 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;p&gt;家里小米智能设备越来越多了，虽然手机也能操作，但是语音操作还是会优雅不少，再者部分蓝牙设备还是需要一个蓝牙网关的。所以最终决定买个小爱音箱来作为中控，经过一番对比，最终买了 Redmi 小爱触屏音箱 Pro8。&lt;/p&gt;
+&lt;p&gt;首先，总结一下，这恐怕是我今年买到的最满意的产品了，一个 499 的产品覆盖了我超多的使用场景。因为带了一个 8 寸屏幕，它带了无尽的可玩性，下面我来挨个说道说道。&lt;/p&gt;
+&lt;h2 id=&#34;硬件配置&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#硬件配置&#34;&gt;#&lt;/a&gt; 硬件配置&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;8 寸的全贴合屏幕，分辨率 &lt;code&gt;1280*800&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;SOC: mt8167，RAM: 2GB, ROM: 3573MB, 安卓 9.0&lt;/li&gt;
+&lt;li&gt;一个大电池：4850mAh&lt;/li&gt;
+&lt;li&gt;一个 720P 的前置摄像头&lt;/li&gt;
+&lt;li&gt;WIFI 支持 2.4G 和 5G（ps：大多数智能设备都只支持 2.4G，它能支持 5G 让我挺意外的）&lt;/li&gt;
+&lt;li&gt;蓝牙 4+（可以作为蓝牙 mesh 网关，蓝牙音箱）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;499 覆盖这么多硬件，已经很不错了，虽然屏幕是 720P 的，但一般也是放在桌上，距离一定距离看屏幕的，而且是全贴合屏！实际观感还是挺细腻的。&lt;/p&gt;
+&lt;h2 id=&#34;作为音箱&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#作为音箱&#34;&gt;#&lt;/a&gt; 作为音箱&lt;/h2&gt;
+&lt;p&gt;首先，作为一个音箱本职工作首先应该是听个响！俗话说的好，万元以下听个响，它的声音还是挺大的，作为一个木耳，听上去还不错。它是可以通过蓝牙连接电脑的，然后电脑可以使用它当做喇叭，个人感觉比我显示器自带的喇叭要好上不少。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/imgbt1.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;智能终端&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#智能终端&#34;&gt;#&lt;/a&gt; 智能终端&lt;/h2&gt;
+&lt;p&gt;作为智能终端，它除了可以通过呼喊小爱来操作家里的米家智能设备外，也可以通过屏幕来操作。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/imgmjzd.png&#34; alt=&#34;&#34; /&gt;&lt;br /&gt;
+不过，不要对屏幕操作期待太多... 因为很多手机上能操作的，它上面都做不了...&lt;br /&gt;
+ 然后作为 mesh 网关，这样家里的一些蓝牙连接的米家设备也可以远程操作了，比如现在我可以在公司打开米家智能门锁帮我朋友开门了&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220165533.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;翻页时钟&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#翻页时钟&#34;&gt;#&lt;/a&gt; 翻页时钟&lt;/h2&gt;
+&lt;p&gt;这是相当吸引我的一点了，因为我很喜欢翻页时钟，一直很想买个可以显示翻页时钟的摆件，不过那种设备要么不好看，稍微好看点的又贵的要死。&lt;/p&gt;
+&lt;p&gt;现在都有了，又有了蓝牙音箱，又有了翻页时钟，个人感觉这款音箱简洁大方，作为时钟摆件颜值还是挺在线的。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220170319.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;预装软件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#预装软件&#34;&gt;#&lt;/a&gt; 预装软件&lt;/h2&gt;
+&lt;p&gt;本身是可以安装 Bilibli 的电视版（云视听）看 B 站内容，因为还带一个大电池，吃饭的时候也可以直接拔了电源放餐桌上边吃边看。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220174350.png&#34; alt=&#34;&#34; /&gt;&lt;br /&gt;
+也能安装网抑云听听听歌，界面也比较简洁。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220174231.png&#34; alt=&#34;&#34; /&gt;&lt;br /&gt;
+其他软件还有优酷，爱奇艺，抖音啥的，都是我不怎么用的，而且很多软件都是要付费使用的，我就不多做介绍了。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220174140.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;其他玩法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#其他玩法&#34;&gt;#&lt;/a&gt; 其他玩法&lt;/h2&gt;
+&lt;p&gt;重点来了！它虽然本身是不能安装 app 的，但我们可以通过一些手段来实现安装 app 的功能（刷机），具体步骤我就不说了，网上搜搜都有的。&lt;br /&gt;
+经过这一操作，他瞬间有了灵魂，因为配置不高，个人安转的大多是一些 TV 版的 app，下面介绍一下我的玩法。&lt;/p&gt;
+&lt;h3 id=&#34;安装emotn-ui代替原生ui&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#安装emotn-ui代替原生ui&#34;&gt;#&lt;/a&gt; 安装 Emotn UI 代替原生 UI&lt;/h3&gt;
+&lt;p&gt;原生 UI 无法显示安装的第三方，而且有很多根本用不上的杂乱软件的图标，很碍眼，所以我安装了 Emotn UI 代替。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220173949.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;安装emotn-store&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#安装emotn-store&#34;&gt;#&lt;/a&gt; 安装 Emotn Store&lt;/h3&gt;
+&lt;p&gt;里面有很多 TV 使用的 APP，商店页面简洁美观，我很喜欢。通过它，你可以安装 &lt;code&gt;Youtube&lt;/code&gt; ,  &lt;code&gt;Netflix&lt;/code&gt;  等等，还可以直接通过无线网安装 app，不用再接线连电脑安装了。（PS：这点很重要，因为接口在一个胶垫下面，很难扒开... 扒多了松了装不回去就尴尬了...）&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220175115.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;工具类&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#工具类&#34;&gt;#&lt;/a&gt; 工具类&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;AIDA64：用来看配置&lt;/li&gt;
+&lt;li&gt;Xplore：可以通过 Samba 访问我的 NAS 上的文件&lt;/li&gt;
+&lt;li&gt;翻页时钟&lt;br /&gt;
+虽然内置了翻页时钟，但是有一些杂乱的按钮和信息，感觉不是很简洁，所以我又安装了一个翻页时钟 APP 来代替，个人感觉比原生的好看很多。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220175507.png&#34; alt=&#34;&#34; /&gt;&lt;br /&gt;
+支持的表盘也比原生的多很多（不过需要付费，不贵，20+）。推荐！&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220175646.png&#34; alt=&#34;&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;乐播投屏：用来投屏&lt;/li&gt;
+&lt;li&gt;终极旋转控制：让一些不支持横屏的 app 强制横屏&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;视频类&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#视频类&#34;&gt;#&lt;/a&gt; 视频类&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;安装了一个哔哩哔哩弹幕版（三方）代替云视听&lt;br /&gt;
+因为云视听需要额外的电视版会员，建议替换为这个&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220175909.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Youtube &amp;amp; Netflix&lt;br /&gt;
+ 根据你的需求吧，我是 Youtube 的重度使用者，必装&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220180037.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;猫影视 TV&lt;br /&gt;
+ 可以自定义源，可以看电视直播，电视上我必装的一个 app，所以也装了&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220180142.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;游戏类&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#游戏类&#34;&gt;#&lt;/a&gt; 游戏类&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;刷机以后是可以连接蓝牙手柄来玩游戏的！&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;RetroArch&lt;br /&gt;
+ 模拟器，用来玩一些 FC，GBA 老游戏，回味小霸王时代，因为配置羸弱，也只能玩玩这些了，PPSSPP 这类吃配置的模拟器就无缘了&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220184416.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Steam Link&lt;br /&gt;
+ 配置差，串流来凑，借助 Steam Link，你就可以玩你电脑上所有的 Steam 游戏啦！&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img20220220184538.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;总结&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#总结&#34;&gt;#&lt;/a&gt; 总结&lt;/h2&gt;
+&lt;p&gt;这款 499 的产品实在太香了，而且折腾起来也很有趣，用我朋友的话讲，雷军 499 卖你这个卖亏了，哈哈哈&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/ubuntu_sudo_nopasswd.html</guid>
+            <title>ubuntu20.04免密执行sudo</title>
+            <link>https://blog.moehz.com/archives/ubuntu_sudo_nopasswd.html</link>
+            <category term="linux" scheme="https://blog.moehz.com/categories/linux/" />
+            <category term="linux" scheme="https://blog.moehz.com/tags/linux/" />
+            <category term="ubuntu" scheme="https://blog.moehz.com/tags/ubuntu/" />
+            <category term="sudo" scheme="https://blog.moehz.com/tags/sudo/" />
+            <pubDate>Wed, 05 Jan 2022 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;blockquote&gt;
+&lt;p&gt;在编写一些自动化脚本的时候，需要以 root 权限执行某些命令，这时候通过修改 /etc/sudoers 来实现免密执行 sudo 命令是一个比较好的办法。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;查看用户所在组&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#查看用户所在组&#34;&gt;#&lt;/a&gt; 查看用户所在组&lt;/h2&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;lab@testlink:~$ &lt;span class=&#34;token function&#34;&gt;groups&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;lab adm cdrom &lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; dip plugdev lxd&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;可以看到用户&lt;mark&gt; lab&lt;/mark&gt; 在 lab，sudo... 等等组里&lt;/p&gt;
+&lt;h2 id=&#34;配置sudoers&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#配置sudoers&#34;&gt;#&lt;/a&gt; 配置 sudoers&lt;/h2&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;lab@testlink:~$ &lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;vim&lt;/span&gt; /etc/sudoers&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;..&lt;/span&gt;.&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# User privilege specification&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root    &lt;span class=&#34;token assign-left variable&#34;&gt;ALL&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;ALL:ALL&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; ALL&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# Members of the admin group may gain root privileges&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;%admin &lt;span class=&#34;token assign-left variable&#34;&gt;ALL&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;ALL&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; ALL&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# Allow members of group sudo to execute any command&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;11&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;%sudo   &lt;span class=&#34;token assign-left variable&#34;&gt;ALL&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;ALL:ALL&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; ALL&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;12&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;%lab    &lt;span class=&#34;token assign-left variable&#34;&gt;ALL&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;ALL:ALL&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; NOPASSWD:ALL&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;13&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;14&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;..&lt;/span&gt;.&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;关键部分如上，在 &lt;code&gt;/etc/sudoers&lt;/code&gt;  中加入一行&lt;br /&gt;
+ &lt;code&gt;%lab    ALL=(ALL:ALL) NOPASSWD:ALL&lt;/code&gt; &lt;br /&gt;
+ 这表示 lab 这个组下的用户可以免密以 &lt;code&gt;sudo&lt;/code&gt;  执行命令&lt;/p&gt;
+&lt;p&gt;注：&lt;br /&gt;
+为什么不直接加入 &lt;code&gt;lab&lt;/code&gt;  这个用户免密而是要加入组呢？这是由于用户 &lt;code&gt;lab&lt;/code&gt;  还在 &lt;code&gt;sudo&lt;/code&gt;  这个组里面， &lt;code&gt;%sudo&lt;/code&gt;  组的配置会覆盖用户的配置，即使配置了用户免密，依然要输入密码，这是与早期 ubuntu 版本不同的地方！&lt;/p&gt;
+&lt;h2 id=&#34;部分命令免密&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#部分命令免密&#34;&gt;#&lt;/a&gt; 部分命令免密&lt;/h2&gt;
+&lt;p&gt;如果不希望 &lt;code&gt;lab&lt;/code&gt;  用户能以 &lt;code&gt;sudo&lt;/code&gt;  免密执行所有命令，如何操作？比如只希望免密执行 &lt;code&gt;sudo apt update&lt;/code&gt; ，操作如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;lab@testlink:~$ &lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;vim&lt;/span&gt; /etc/sudoers&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;..&lt;/span&gt;.&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# Cmnd alias specification&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;Cmnd_Alias &lt;span class=&#34;token assign-left variable&#34;&gt;SCMD&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;/usr/bin/apt update&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# User privilege specification&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;root    &lt;span class=&#34;token assign-left variable&#34;&gt;ALL&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;ALL:ALL&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; ALL&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# Members of the admin group may gain root privileges&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;%admin &lt;span class=&#34;token assign-left variable&#34;&gt;ALL&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;ALL&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; ALL&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;11&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;12&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# Allow members of group sudo to execute any command&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;13&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;%sudo   &lt;span class=&#34;token assign-left variable&#34;&gt;ALL&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;ALL:ALL&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; ALL&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;14&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;%lab    &lt;span class=&#34;token assign-left variable&#34;&gt;ALL&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;ALL:ALL&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; NOPASSWD:SCMD&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;15&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;..&lt;/span&gt;.&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;ul&gt;
+&lt;li&gt;添加 &lt;code&gt;Cmnd_Alias SCMD=/usr/bin/apt update&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;修改 &lt;code&gt;%lab    ALL=(ALL:ALL) NOPASSWD:ALL&lt;/code&gt;  中的 &lt;code&gt;ALL&lt;/code&gt;  为 &lt;code&gt;SCMD&lt;/code&gt;  (对应上面的 Cmnd_Alias 中的命名)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这样 lab 就只能免密执行 &lt;code&gt;sudo apt update&lt;/code&gt; ，其他的命令因为 lab 还处在 &lt;code&gt;sudo&lt;/code&gt;  组里面，所以也还是能执行的，只是需要密码，匹配 &lt;code&gt;%sudo   ALL=(ALL:ALL) ALL&lt;/code&gt;  这条规则&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/ONU_status.html</guid>
+            <title>GPON onu o1-o7状态转换</title>
+            <link>https://blog.moehz.com/archives/ONU_status.html</link>
+            <category term="网络" scheme="https://blog.moehz.com/categories/%E7%BD%91%E7%BB%9C/" />
+            <category term="pon" scheme="https://blog.moehz.com/categories/%E7%BD%91%E7%BB%9C/pon/" />
+            <category term="olt" scheme="https://blog.moehz.com/tags/olt/" />
+            <category term="gpon" scheme="https://blog.moehz.com/tags/gpon/" />
+            <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;p&gt;激活过程由状态和状态转移中的功能行为来规范。&lt;/p&gt;
+&lt;p&gt;ONU 状态&lt;/p&gt;
+&lt;p&gt;ONU 有 7 种状态：&lt;/p&gt;
+&lt;p&gt;a)  初始状态 Initial-state（O1）&lt;br /&gt;
+该状态的 ONU 刚刚上电，仍处于 LOS/LOF。一旦接收到下行流，LOS 和 LOF 消除，ONU 就转移到待机状态（O2）。&lt;/p&gt;
+&lt;p&gt;b)  待机状态 Standby-state（O2）&lt;br /&gt;
+该 状 态 的 ONU 已 经 接 收 到 下 行 流 ， 在 等 待 接 收 网 络 参 数 。 当 ONU 接 收 到 Upstream_Overhead 消息后根据这些网络参数进行相关配置（如：定界符、功率模式、预置的均衡时延）并转移到序列号状态（O3）。&lt;/p&gt;
+&lt;p&gt;c)  序列号状态 Serial-Number-state（O3）&lt;br /&gt;
+OLT 给所有处于该状态的 ONU 发送 Serial-Number Request 消息，以发现新的 ONU 以及他们的序列号。当 OLT 发现了新的 ONU 后，ONU 就等待 OLT 给它指配 ONU-ID。OLT 通过&lt;br /&gt;
+ Assign_ONU-ID 消息来指配 ONU-ID。ONU 获得 ONU-ID 后就转移到测距状态（O4）。&lt;/p&gt;
+&lt;p&gt;d)  测距状态 Ranging-state（O4）&lt;br /&gt;
+不同的 ONU 发送信号到达 OLT 时应保持同步，为此每个 ONU 需要一个均衡时延，该参数是在测距状态中测得的。ONU 接收到 Ranging_Time 消息后转移到运行状态（O5）。&lt;/p&gt;
+&lt;p&gt;e)  运行状态 Operation-state（O5）&lt;br /&gt;
+处于该状态的 ONU 可以在 OLT 的控制下发送上行数据以及 PLOAM 消息，该状态中的 ONU 也可根据需求建立其他连接。当测距成功后，所有的 ONU 都依据各自的均衡时延发送&lt;br /&gt;
+信号，以保持上行帧的同步。不同 ONU 发送的信号将分别到达 OLT，但每个信号会正好出现在上行帧中它应该出现的位置上。暂停运行中的 ONU：在正常运行时，OLT 可能使 ONU 暂停发送信号以获得其它 ONU 的序列号或对其它 ONU 进行测距。OLT 持续一段时间停止对所有上行带宽的授权，ONU 按照正常的方式工作，由于没有接收到授权就不会发送信号，从而产生一个安静时段，这样 OLT 就使得所有 ONU 暂停发送信号。&lt;/p&gt;
+&lt;p&gt;f)  POPUP 状态 POPUP-state（O6）&lt;br /&gt;
+当处于运行状态（O5）的 ONU 检测到 LOS 或 LOF 时就进入到该状态。在该状态中 ONU 立即停止发送信号，这样 OLT 将检测到该 ONU 的 LOS 告警。当 ODN 光纤中断时，许多 ONU 都会进入到该状态，从网络可靠性考虑，此时应采用以下方式之一：&lt;br /&gt;
+如果启用了保护倒换，所有的 ONU 将倒换到备用光纤上。这时所有 ONU 将重新进行测距，为此 OLT 发送 Broadcast POPUP 消息通知所有 ONU 进入到测距状态（O4）。&lt;br /&gt;
+如果没有保护倒换但 ONU 具有内部保护能力，OLT 发送 Directed POPUP 消息通知 ONU 进入运行状态（O5）。当 ONU 进入到 O5 状态时，OLT 需要先对该 ONU 进行检测，之后再&lt;br /&gt;
+恢复该 ONU 的业务。如果 ONU 没有从 LOS 或 LOF 中恢复过来，ONU 就不会收到 Broadcast POPUP 消息或 Directed POPUP 消息，经过 TO2 时间后 ONU 进入初始状态（O1）。&lt;/p&gt;
+&lt;p&gt;g)  紧急停止状态 Emergency-Stop-state（O7）&lt;/p&gt;
+&lt;p&gt;当 ONU 接收到的 Disable_Serial_Number 消息带有 “Disable” 选项时，ONU 就进入到紧急停止状态（O7）并关闭激光器。在 O7 状态下，ONU 被禁止发送信号。如果 ONU 没有成功进入到 O7 状态，并且 OLT 仍能继续接收到 ONU 发送的信号，OLT 将产生 Dfi 告警。当 ONU 的故障排除后，OLT 发送带有 “Enable” 选项的 Disable_Serial_Number 消息，从而激活该 ONU。ONU 接收到消息后进入待机状态（O2），所有的参数（包括序列号和 ONU-ID）将被重新检查。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20170424102657804.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;原文链接：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdnYW5nX2h6Y3cvYXJ0aWNsZS9kZXRhaWxzLzcwNTcwMTIw&#34;&gt;https://blog.csdn.net/wanggang_hzcw/article/details/70570120&lt;/span&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/3ds_controllers.html</guid>
+            <title>3DS外接手柄</title>
+            <link>https://blog.moehz.com/archives/3ds_controllers.html</link>
+            <category term="ACG" scheme="https://blog.moehz.com/categories/ACG/" />
+            <category term="Game" scheme="https://blog.moehz.com/categories/ACG/Game/" />
+            <category term="3DS" scheme="https://blog.moehz.com/categories/ACG/Game/3DS/" />
+            <category term="3DS" scheme="https://blog.moehz.com/tags/3DS/" />
+            <pubDate>Sat, 07 Aug 2021 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;前提&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#前提&#34;&gt;#&lt;/a&gt; 前提&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;3DS 需进行 b9s 破解，luma 8.0 以上&lt;/li&gt;
+&lt;li&gt;PC 一台，PC 和 3DS 需连接到同一网络&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;note info&#34;&gt;
+&lt;p&gt;仅需同一网络即可，可以不连到同一 wifi 节点，电脑连 5G，3DS 连 2.4G 也是可以的，甚至电脑有线连接也可以。&lt;/p&gt;
+&lt;/div&gt;
+&lt;h1 id=&#34;步骤&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#步骤&#34;&gt;#&lt;/a&gt; 步骤&lt;/h1&gt;
+&lt;h2 id=&#34;3ds上的操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#3ds上的操作&#34;&gt;#&lt;/a&gt; 3DS 上的操作&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;同时按&lt;span class=&#34;kbd&#34;&gt; L&lt;/span&gt;+&lt;span class=&#34;kbd&#34;&gt;↓&lt;/span&gt;+&lt;span class=&#34;kbd&#34;&gt;SELECT&lt;/span&gt; 唤出菜单&lt;/li&gt;
+&lt;li&gt;选择 &lt;code&gt;Miscellaneous options&lt;/code&gt;  后，点&lt;span class=&#34;kbd&#34;&gt; A&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;选择 &lt;code&gt;Start InputRedirection&lt;/code&gt;  后，点&lt;span class=&#34;kbd&#34;&gt; A&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;按&lt;span class=&#34;kbd&#34;&gt; B&lt;/span&gt; 返回菜单后，看到右上角显示了 IP 地址就说明开启成功了。&lt;/li&gt;
+&lt;li&gt;记住 IP 地址，后面会用，然后一直按&lt;span class=&#34;kbd&#34;&gt; B&lt;/span&gt; 退出菜单&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;电脑端的操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#电脑端的操作&#34;&gt;#&lt;/a&gt; 电脑端的操作&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;下载软件：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly93d3IubGFuem91aS5jb20vaXJwcUlzY2RraWI=&#34;&gt;InputRedirection，密码：2333&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;解压后，打开软件，在 IP address 一栏输入上一步看到的 IP 地址&lt;/li&gt;
+&lt;li&gt;连接手柄到电脑上，现在应该就可以使用手柄操控 3DS 了&lt;/li&gt;
+&lt;/ol&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/win10_set_startupapp.html</guid>
+            <title>WIN10强制软件开机自启的方法</title>
+            <link>https://blog.moehz.com/archives/win10_set_startupapp.html</link>
+            <category term="default" scheme="https://blog.moehz.com/categories/default/" />
+            <category term="win10" scheme="https://blog.moehz.com/tags/win10/" />
+            <pubDate>Sun, 01 Aug 2021 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;p&gt;今天发现一个可以设置快捷键，一键切换分辨率的软件&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9mdW5rLmV1L2hyYy8=&#34;&gt; HRC&lt;/span&gt;，玩一些不支持高分屏的游戏还是有点用的。&lt;/p&gt;
+&lt;p&gt;但是这个软件没有设置开机自启的设置项，所以查了一下 WIN10 怎么设置开机自启，记录一下方法，方便以后查询&lt;/p&gt;
+&lt;p&gt;1. 通过快捷键 &lt;code&gt;WIN+R&lt;/code&gt;  打开运行窗口，输入开机启动的文件夹路径，如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight raw&#34;&gt;&lt;figcaption data-lang=&#34;&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;2. 创建需要开机自启的软件的快捷方式，放入该文件夹即可&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/win11_upgrade_condition.html</guid>
+            <title>解决不能升级WIN11的问题</title>
+            <link>https://blog.moehz.com/archives/win11_upgrade_condition.html</link>
+            <category term="其他" scheme="https://blog.moehz.com/categories/%E5%85%B6%E4%BB%96/" />
+            <category term="WIN11" scheme="https://blog.moehz.com/tags/WIN11/" />
+            <category term="TPM" scheme="https://blog.moehz.com/tags/TPM/" />
+            <pubDate>Sat, 26 Jun 2021 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;序&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#序&#34;&gt;#&lt;/a&gt; 序&lt;/h1&gt;
+&lt;div class=&#34;note info&#34;&gt;
+&lt;p&gt;温馨提醒：此段都是废话，不想听我扯淡的可以直接看下面的教程&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;之前就发生过 win11 的泄露事件，我也是第一时间用虚拟机安装体验了一把。个人感觉变化不大，仅仅做了一些 UI 的调整。&lt;/p&gt;
+&lt;p&gt;不久后，&lt;s&gt;巨硬&lt;/s&gt;微软发布了 win11，坐实了泄露版是真正的 win11，只是版本较为早期一些。在发布中，比较吸引我的一点是自带安卓环境，以后就不用装安卓模拟器玩安卓游戏了。&lt;/p&gt;
+&lt;p&gt;这可就让我爽到了，毕竟我电脑大部分时间就是边看视频边刷碧蓝航线，所以我还是很有动力升级 WIN11 的。&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20210626181456.png&#34; alt=&#34;20210626181456&#34; /&gt;&lt;br /&gt;
+&lt;span class=&#34;spoiler&#34; title=&#34;你知道得太多了&#34;&gt; 佐贺偶像天下第一！碧蓝航线天下第一！&lt;/span&gt;&lt;/p&gt;
+&lt;h1 id=&#34;问&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#问&#34;&gt;#&lt;/a&gt; 问&lt;/h1&gt;
+&lt;p&gt;回归正题，微软公布了安装 win11 的最低配置，还发布了个检测软件。&lt;br /&gt;
+检测软件下载地址：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly93d3cubWljcm9zb2Z0LmNvbS96aC1jbi93aW5kb3dzL3dpbmRvd3MtMTE=&#34;&gt;https://www.microsoft.com/zh-cn/windows/windows-11&lt;/span&gt;&lt;br /&gt;
+ 拉到下面，点击下载应用，如图：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20210626181339.png&#34; alt=&#34;20210626181339&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;无脑安装后就可以检测了，结果...&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20210626181708.png&#34; alt=&#34;20210626181708&#34; /&gt;&lt;br /&gt;
+ 我裂开了，要知道我的配置既不是很旧也不算低了，如图：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20210626181957.png&#34; alt=&#34;20210626181957&#34; /&gt;&lt;br /&gt;
+ 显卡卖给矿老板了，请无视 orz。除显卡外，我的配置可以说相当高了。&lt;br /&gt;
+可以说我要是不能升级，90% 的人估计都升不了，这显然不合理。经过一系列的搜索，我最终找到了问题所在。&lt;/p&gt;
+&lt;h1 id=&#34;解&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#解&#34;&gt;#&lt;/a&gt; 解&lt;/h1&gt;
+&lt;h2 id=&#34;检测tpm是否开启&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#检测tpm是否开启&#34;&gt;#&lt;/a&gt; 检测 TPM 是否开启&lt;/h2&gt;
+&lt;p&gt;其实最主要的问题在于 TPM 有没有开启，下面是检测是否开启的方法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;win&lt;/code&gt; + &lt;code&gt;r&lt;/code&gt;  调出运行窗口&lt;/li&gt;
+&lt;li&gt;输入 &lt;code&gt;tpm.msc&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://ypy.moehz.com/img/20210626182403.png&#34; alt=&#34;20210626182403&#34; /&gt;&lt;br /&gt;
+ 按回车键后，会跳出如下窗口&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20210626182530.png&#34; alt=&#34;20210626182530&#34; /&gt;&lt;br /&gt;
+ 如果你看到的是上图，那么你无法升级 WIN11 的原因很大可能也是在此&lt;/p&gt;
+&lt;h2 id=&#34;开启tpm&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#开启tpm&#34;&gt;#&lt;/a&gt; 开启 TPM&lt;/h2&gt;
+&lt;p&gt;这需要去主板 BIOS 开启&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;INTEL 系的主板里，这个功能选项叫做 &lt;code&gt;PTT&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;AMD 系的主板里，这个功能叫 &lt;code&gt;fTPM&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如何开启请自行搜索，各家主板位置可能不同，无法赘述&lt;/p&gt;
+&lt;p&gt;开启后，再用上面介绍的方法检测 TPM 是否开启。一般此时应该能解决问题，但是不幸的事发生了，即使我在 bios 里开启了 PTT 选项，系统依然无法检测到 TPM。如果你不幸跟我一样，这样也无法解决，可能也要 &lt;code&gt;升级Bios&lt;/code&gt;  了。没错，在我从官网下载了最新的 bios 进行升级以后，终于成功的开启了 TPM。&lt;/p&gt;
+&lt;h2 id=&#34;成功后的测试&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#成功后的测试&#34;&gt;#&lt;/a&gt; 成功后的测试&lt;/h2&gt;
+&lt;p&gt;如果你成功的开启了 TPM，通过 &lt;code&gt;tpm.msc&lt;/code&gt;  应该可以看到如下画面：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20210626184238.png&#34; alt=&#34;20210626184238&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;此时再去检测看看，反正我的问题事解决了：&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20210626184333.png&#34; alt=&#34;20210626184333&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;后面就可以坐等升级推送了！&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/wireshark_ax200_wifi.html</guid>
+            <title>linux下空口抓包环境搭建</title>
+            <link>https://blog.moehz.com/archives/wireshark_ax200_wifi.html</link>
+            <category term="网络" scheme="https://blog.moehz.com/categories/%E7%BD%91%E7%BB%9C/" />
+            <category term="WIFI" scheme="https://blog.moehz.com/categories/%E7%BD%91%E7%BB%9C/WIFI/" />
+            <category term="wireshark" scheme="https://blog.moehz.com/tags/wireshark/" />
+            <category term="WIFI" scheme="https://blog.moehz.com/tags/WIFI/" />
+            <pubDate>Thu, 24 Jun 2021 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;安装ubuntu&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#安装ubuntu&#34;&gt;#&lt;/a&gt; 安装 ubuntu&lt;/h1&gt;
+&lt;h2 id=&#34;下载镜像&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#下载镜像&#34;&gt;#&lt;/a&gt; 下载镜像&lt;/h2&gt;
+&lt;p&gt;系统镜像地址：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9jbi51YnVudHUuY29tL2Rvd25sb2FkL2Rlc2t0b3A=&#34;&gt;https://cn.ubuntu.com/download/desktop&lt;/span&gt;&lt;br /&gt;
+ 安装最新的 &lt;code&gt;Ubuntu 20.04.2.0 LTS&lt;/code&gt;  已保证最新的内核和驱动来支持 AX200 等网卡&lt;/p&gt;
+&lt;h2 id=&#34;制作u盘启动盘&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#制作u盘启动盘&#34;&gt;#&lt;/a&gt; 制作 U 盘启动盘&lt;/h2&gt;
+&lt;p&gt;1. 安装 Ventoy&lt;br /&gt;
+ 下载地址：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9naXRodWIuY29tL3ZlbnRveS9WZW50b3kvcmVsZWFzZXM=&#34;&gt;https://github.com/ventoy/Ventoy/releases&lt;/span&gt;&lt;br /&gt;
+ 绿色包，无需安装解压直接可用&lt;/p&gt;
+&lt;p&gt;2. 点击 &lt;code&gt;Ventoy2Disk.exe&lt;/code&gt; ，使用软件制作一个 U 盘启动盘&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/20210624140439.png&#34; alt=&#34;20210624140439&#34; /&gt;&lt;br /&gt;
+ 走完进度条就制作完毕&lt;/p&gt;
+&lt;p&gt;3. 将下载的 ubuntu 镜像放到 U 盘中就完成引导盘的制作了&lt;/p&gt;
+&lt;h2 id=&#34;安装系统&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#安装系统&#34;&gt;#&lt;/a&gt; 安装系统&lt;/h2&gt;
+&lt;p&gt;根据各自机型进 bios（一般为开机按 F2，F12，DEL 等按键），将 U 盘设为第一启动项，进入后根据引导安装系统。根据引导程序可以很容易的安装 ubuntu，此处安装过程省略&lt;/p&gt;
+&lt;h2 id=&#34;进入系统后的开局操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#进入系统后的开局操作&#34;&gt;#&lt;/a&gt; 进入系统后的开局操作&lt;/h2&gt;
+&lt;p&gt;1. 按 &lt;code&gt;ctrl+alt+T&lt;/code&gt;  呼出终端，输入如下命令：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;更新软件库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;apt-get&lt;/span&gt; update&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;ul&gt;
+&lt;li&gt;升级软件库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;apt-get&lt;/span&gt; upgrade&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;hr /&gt;
+&lt;h1 id=&#34;安装wireshark&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#安装wireshark&#34;&gt;#&lt;/a&gt; 安装 wireshark&lt;/h1&gt;
+&lt;h2 id=&#34;启用universe-资源库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#启用universe-资源库&#34;&gt;#&lt;/a&gt; 启用 Universe 资源库&lt;/h2&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; add-apt-repository universe&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;添加-wireshark-官方-ppa&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#添加-wireshark-官方-ppa&#34;&gt;#&lt;/a&gt; 添加 wireshark 官方 PPA&lt;/h2&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; add-apt-repository ppa:wireshark-dev/stable&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;apt&lt;/span&gt; update&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;安装wireshark-2&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#安装wireshark-2&#34;&gt;#&lt;/a&gt; 安装 wireshark&lt;/h2&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;apt&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;install&lt;/span&gt; wireshark&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;注：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;安装过程中会有一个类图形界面跳出，是询问是否允许非 &lt;code&gt;root&lt;/code&gt;  用户抓包，选 &lt;code&gt;Yes&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果不小心选了 &lt;code&gt;No&lt;/code&gt; ，使用如下命令重新配置&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; dpkg-reconfigure wireshark-common&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;将当前用户加入到-wireshark-组&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#将当前用户加入到-wireshark-组&#34;&gt;#&lt;/a&gt; 将当前用户加入到 wireshark 组&lt;/h2&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;usermod&lt;/span&gt; -aG wireshark &lt;span class=&#34;token variable&#34;&gt;&lt;span class=&#34;token variable&#34;&gt;$(&lt;/span&gt;&lt;span class=&#34;token function&#34;&gt;whoami&lt;/span&gt;&lt;span class=&#34;token variable&#34;&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;logout-后重新登陆一下&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#logout-后重新登陆一下&#34;&gt;#&lt;/a&gt; logout 后重新登陆一下&lt;/h2&gt;
+&lt;p&gt;此时已经可以使用普通用户打开 wireshark 进行抓包了，但还不能空口抓包&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1 id=&#34;空口抓包的设置&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#空口抓包的设置&#34;&gt;#&lt;/a&gt; 空口抓包的设置&lt;/h1&gt;
+&lt;h2 id=&#34;安装aircrack-ng&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#安装aircrack-ng&#34;&gt;#&lt;/a&gt; 安装 aircrack-ng&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;用来切换网卡为监听模式&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;apt-get&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;install&lt;/span&gt; aircrack-ng&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;监听模式的开关&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#监听模式的开关&#34;&gt;#&lt;/a&gt; 监听模式的开关&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;开启监听模式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; airmon-ng start wlp2s0&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;ul&gt;
+&lt;li&gt;关闭监听模式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;sudo&lt;/span&gt; airmon-ng stop wlp2s0mon&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;空口抓包&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#空口抓包&#34;&gt;#&lt;/a&gt; 空口抓包&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;开启监听模式后就可以用 wireshark 空口抓包了&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;1. 勾选 &lt;code&gt;View&lt;/code&gt; --&amp;gt; &lt;code&gt;Wireless Toolbar&lt;/code&gt; , 开启后可以选信道，频宽选项&lt;br /&gt;
+ 2. 选择信道，频宽后就可以开始抓包了&lt;br /&gt;
+&lt;img data-src=&#34;https://ypy.moehz.com/img/wireshark_wifi6.png&#34; alt=&#34;wireshark_wifi6&#34; /&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">https://blog.moehz.com/archives/wifi_mode_rate.html</guid>
+            <title>不同的 Wi-Fi 协议和数据速率</title>
+            <link>https://blog.moehz.com/archives/wifi_mode_rate.html</link>
+            <category term="网络" scheme="https://blog.moehz.com/categories/%E7%BD%91%E7%BB%9C/" />
+            <category term="WIFI" scheme="https://blog.moehz.com/categories/%E7%BD%91%E7%BB%9C/WIFI/" />
+            <category term="WIFI" scheme="https://blog.moehz.com/tags/WIFI/" />
+            <pubDate>Tue, 15 Jun 2021 00:00:00 +0000</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;ieee-80211-wi-fi-协议摘要&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#ieee-80211-wi-fi-协议摘要&#34;&gt;#&lt;/a&gt; IEEE 802.11 Wi-Fi 协议摘要&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;协议&lt;/th&gt;
+&lt;th&gt;频率&lt;/th&gt;
+&lt;th&gt;通道宽度&lt;/th&gt;
+&lt;th&gt;MIMO&lt;/th&gt;
+&lt;th&gt;最大数据速率（理论上）&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;802.11ax&lt;/td&gt;
+&lt;td&gt;2.4 或 5GHz&lt;/td&gt;
+&lt;td&gt;20, 40, 80, 160MHz&lt;/td&gt;
+&lt;td&gt;多用户 (MU-MIMO)&lt;/td&gt;
+&lt;td&gt;2.4 Gbps1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;802.11ac wave2&lt;/td&gt;
+&lt;td&gt;5 GHz&lt;/td&gt;
+&lt;td&gt;20, 40, 80, 160MHz&lt;/td&gt;
+&lt;td&gt;多用户 (MU-MIMO)&lt;/td&gt;
+&lt;td&gt;1.73 Gbps2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;802.11ac wave1&lt;/td&gt;
+&lt;td&gt;5 GHz&lt;/td&gt;
+&lt;td&gt;20, 40, 80MHz&lt;/td&gt;
+&lt;td&gt;单用户 (SU MIMO)&lt;/td&gt;
+&lt;td&gt;866.7 Mbps2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;802.11n&lt;/td&gt;
+&lt;td&gt;2.4 或 5 GHz&lt;/td&gt;
+&lt;td&gt;20、40MHz&lt;/td&gt;
+&lt;td&gt;单用户 (SU MIMO)&lt;/td&gt;
+&lt;td&gt;450 Mbps3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;802.11g&lt;/td&gt;
+&lt;td&gt;2.4 GHz&lt;/td&gt;
+&lt;td&gt;20 MHz&lt;/td&gt;
+&lt;td&gt;不适用&lt;/td&gt;
+&lt;td&gt;54 Mbps&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;802.11a&lt;/td&gt;
+&lt;td&gt;5 GHz&lt;/td&gt;
+&lt;td&gt;20 MHz&lt;/td&gt;
+&lt;td&gt;不适用&lt;/td&gt;
+&lt;td&gt;54 Mbps&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;802.11b&lt;/td&gt;
+&lt;td&gt;2.4 GHz&lt;/td&gt;
+&lt;td&gt;20 MHz&lt;/td&gt;
+&lt;td&gt;不适用&lt;/td&gt;
+&lt;td&gt;11 Mbps&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;传统 802.11&lt;/td&gt;
+&lt;td&gt;2.4 GHz&lt;/td&gt;
+&lt;td&gt;20 MHz&lt;/td&gt;
+&lt;td&gt;不适用&lt;/td&gt;
+&lt;td&gt;2 Mbps&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;80211ax-wi-fi-6&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#80211ax-wi-fi-6&#34;&gt;#&lt;/a&gt; 802.11ax (Wi-Fi 6)&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;支持 2.4 和 5 GHz&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Mode&lt;/th&gt;
+&lt;th&gt;最大速率&lt;/th&gt;
+&lt;th&gt;天线传输 / 接收阵列&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1x1 20 MHz&lt;/td&gt;
+&lt;td&gt;143 Mbps&lt;/td&gt;
+&lt;td&gt;1 TX（传输、上传）&lt;br/&gt;1 RX（接收、下载)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2x2 20 MHz&lt;/td&gt;
+&lt;td&gt;287 Mbps&lt;/td&gt;
+&lt;td&gt;2 TX 2 RX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1x1 40 MHz&lt;/td&gt;
+&lt;td&gt;287 Mbps&lt;/td&gt;
+&lt;td&gt;1 TX 1 RX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2x2 40 MHz&lt;/td&gt;
+&lt;td&gt;574 Mbps&lt;/td&gt;
+&lt;td&gt;2 TX 2 RX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1x1 80 MHz&lt;/td&gt;
+&lt;td&gt;601 Mbps&lt;/td&gt;
+&lt;td&gt;1 TX 1 RX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2x2 80 MHz&lt;/td&gt;
+&lt;td&gt;1.2 Gbps&lt;/td&gt;
+&lt;td&gt;2 TX 2 RX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1x1 160 MHz&lt;/td&gt;
+&lt;td&gt;1.2 Gbps&lt;/td&gt;
+&lt;td&gt;1 TX 1 RX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2x2 160 MHz&lt;/td&gt;
+&lt;td&gt;2.4 Gbps&lt;/td&gt;
+&lt;td&gt;2 TX 2 RX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>
